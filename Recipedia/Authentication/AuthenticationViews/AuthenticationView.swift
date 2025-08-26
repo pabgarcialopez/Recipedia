@@ -15,7 +15,6 @@ enum AuthenticationSheetView: String, Identifiable {
 struct AuthenticationView: View {
     
     @ObservedObject var authenticationViewModel: AuthenticationViewModel
-    
     @State private var authSheet: AuthenticationSheetView?
     
     var body: some View {

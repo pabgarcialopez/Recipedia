@@ -36,6 +36,7 @@ struct SignInView: View {
                 Text(errorMessage)
                     .foregroundStyle(.red)
                     .bold()
+                    .padding(.top, 20)
             }
             
             Spacer()
@@ -53,9 +54,7 @@ struct SignInView: View {
         .padding(50)
     }
     
-    func signIn() {
-        
-    }
+    func signIn() { authenticationViewModel.signIn(email: email, password: password) }
 }
 
 #Preview {

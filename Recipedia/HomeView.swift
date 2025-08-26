@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    @ObservedObject var authenticationViewModel: AuthenticationViewModel
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("User logged in: \(authenticationViewModel.user?.email ?? "No user")")
+        Button("Sign out", action: authenticationViewModel.signOut)
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(authenticationViewModel: AuthenticationViewModel())
 }

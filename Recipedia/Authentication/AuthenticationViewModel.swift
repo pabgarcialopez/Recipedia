@@ -19,11 +19,24 @@ final class AuthenticationViewModel: ObservableObject {
     }
     
     func getCurrentUser() {
-        self.user = authenticationRepository.getCurrentUser()
+        authenticationRepository.getCurrentUser { user in
+            self.user = user
+        }
     }
     
     func createNewUser(email: String, password: String) {
         authenticationRepository.createNewUser(email: email, password: password) { [weak self] result in
+            switch result {
+            case .success(let user):
+                self?.user = user
+            case .failure(let error):
+                self?.errorMessage = error.localizedDescription
+            }
+        }
+    }
+    
+    func signIn(email: String, password: String) {
+        authenticationRepository.signIn(email: email, password: password) { [weak self] result in
             switch result {
             case .success(let user):
                 self?.user = user

@@ -36,6 +36,7 @@ struct SignUpView: View {
                 Text(errorMessage)
                     .foregroundStyle(.red)
                     .bold()
+                    .padding(.top, 20)
             }
             
             Spacer()
