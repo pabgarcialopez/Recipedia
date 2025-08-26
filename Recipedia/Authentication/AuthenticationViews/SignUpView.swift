@@ -51,11 +51,12 @@ struct SignUpView: View {
             }
         }
         .padding(50)
+        .onAppear {
+            authenticationViewModel.errorMessage = nil
+        }
     }
     
-    func signUp() {
-        authenticationViewModel.createNewUser(email: email, password: password)
-    }
+    func signUp() { authenticationViewModel.createNewUser(email: email, password: password) }
 }
 
 #Preview {

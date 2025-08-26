@@ -52,6 +52,9 @@ struct SignInView: View {
             
         }
         .padding(50)
+        .onAppear {
+            authenticationViewModel.errorMessage = nil
+        }
     }
     
     func signIn() { authenticationViewModel.signIn(email: email, password: password) }
