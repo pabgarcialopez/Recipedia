@@ -23,7 +23,6 @@ struct ProfileView: View {
     
     private var profileCard: some View {
         ZStack {
-            
             RoundedRectangle(cornerRadius: 22)
                 .fill(.blue.opacity(0.15).shadow(.drop(color: .black, radius: 5, x: 5, y: 5)))
                 .stroke(.blue, lineWidth: 2)
@@ -57,27 +56,65 @@ struct ProfileView: View {
             .padding()
         }
     }
-    
-    
+    private var signOutButton: some View {
+        return Button(action: profileViewModel.signOut) {
+            HStack {
+                Image(systemName: "rectangle.portrait.and.arrow.right")
+                Text("Sign out")
+            }
+            .frame(maxWidth: .infinity)
+            .bold()
+            .foregroundStyle(.black)
+            .padding()
+            .background(.red.opacity(0.2))
+            .clipShape(RoundedRectangle(cornerRadius: 15))
+            .overlay(
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(Color.red, lineWidth: 2)
+            )
+        }
+    }
         
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    
                     profileCard
                     
-                    Button("Log out") {
-                        profileViewModel.signOut()
-                    }
+                    profileNavigationLink("Account", icon: "person.fill", destination: EmptyView())
+                    
+                    signOutButton
                 }
                 .padding()
                 .frame(maxHeight: .infinity, alignment: .top)
             }
             .navigationTitle("Profile")
         }
-        
     }
+    
+    func profileNavigationLink<Content: View>(_ title: String, icon: String, destination: Content) -> some View {
+        return NavigationLink {
+            destination
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(.clear.shadow(.drop(color: .black, radius: 5, x: 5, y: 5)))
+                    .stroke(.black, lineWidth: 2)
+                
+                HStack {
+                    Image(systemName: icon)
+                    Text(title)
+                    Spacer()
+                    Image(systemName: "chevron.forward")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundStyle(.black)
+                .padding()
+            }
+            
+        }
+    }
+
 }
 
 #Preview {
