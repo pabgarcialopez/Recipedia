@@ -10,6 +10,7 @@
 		5B21F9122E5C5EFC00CA2175 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 5B21F9112E5C5EFC00CA2175 /* FirebaseAnalytics */; };
 		5B21F9142E5C5EFC00CA2175 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5B21F9132E5C5EFC00CA2175 /* FirebaseAuth */; };
 		5B21F9162E5C5EFC00CA2175 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5B21F9152E5C5EFC00CA2175 /* FirebaseFirestore */; };
+		5B21F9412E5F0A0E00CA2175 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 5B21F9402E5F0A0E00CA2175 /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5B21F9122E5C5EFC00CA2175 /* FirebaseAnalytics in Frameworks */,
+				5B21F9412E5F0A0E00CA2175 /* FirebaseStorage in Frameworks */,
 				5B21F9142E5C5EFC00CA2175 /* FirebaseAuth in Frameworks */,
 				5B21F9162E5C5EFC00CA2175 /* FirebaseFirestore in Frameworks */,
 			);
@@ -87,6 +89,7 @@
 				5B21F8D62E5BC4BC00CA2175 /* Recipedia */,
 				5B21F8E42E5BC4BF00CA2175 /* RecipediaTests */,
 				5B21F8EE2E5BC4BF00CA2175 /* RecipediaUITests */,
+				5B21F93F2E5F0A0E00CA2175 /* Frameworks */,
 				5B21F8D52E5BC4BC00CA2175 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -99,6 +102,13 @@
 				5B21F8EB2E5BC4BF00CA2175 /* RecipediaUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5B21F93F2E5F0A0E00CA2175 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -124,6 +134,7 @@
 				5B21F9112E5C5EFC00CA2175 /* FirebaseAnalytics */,
 				5B21F9132E5C5EFC00CA2175 /* FirebaseAuth */,
 				5B21F9152E5C5EFC00CA2175 /* FirebaseFirestore */,
+				5B21F9402E5F0A0E00CA2175 /* FirebaseStorage */,
 			);
 			productName = Recipedia;
 			productReference = 5B21F8D42E5BC4BC00CA2175 /* Recipedia.app */;
@@ -600,6 +611,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5B21F9102E5C5EFC00CA2175 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		5B21F9402E5F0A0E00CA2175 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5B21F9102E5C5EFC00CA2175 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

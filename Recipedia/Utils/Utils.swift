@@ -21,18 +21,25 @@ extension EnvironmentValues {
     }
 }
 
+// --------- Allow general use of the authentication functions ------
+
+struct AuthKey: EnvironmentKey {
+    static let defaultValue: AuthenticationViewModel = AuthenticationViewModel()
+}
+
+extension EnvironmentValues {
+    var auth: AuthenticationViewModel {
+        get { self[AuthKey.self] }
+        set { self[AuthKey.self] = newValue }
+    }
+}
+
+
 // --------- Hide keyboard functionality ----------------------------
 
 func hideKeyboard() { // Global function to dismiss the keyboard
     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
 }
-
-// --------- Image from its name in the Asset Catalog ---------------
-//func imageModelFromAsset(named name: String) -> ImageModel? {
-//    guard let uiImage = UIImage(named: name) else { return nil }
-//    guard let data = uiImage.pngData() else { return nil }
-//    return ImageModel(data: data)
-//}
 
 // --------- Stroked border -----------------------------------------
 struct Stroked: ViewModifier {

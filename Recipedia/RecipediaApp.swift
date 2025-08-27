@@ -18,17 +18,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 }
 
 @main
-struct YourApp: App {
+struct RecipediaApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject var authenticationViewModel = AuthenticationViewModel()
-    
+
     var body: some Scene {
         WindowGroup {
-            if let _ = authenticationViewModel.user {
-                HomeView(authenticationViewModel: authenticationViewModel)
+            if authenticationViewModel.user != nil {
+                RootView(authenticationViewModel: authenticationViewModel)
             } else {
-                AuthenticationView(authenticationViewModel: authenticationViewModel)
+                AuthenticationView()
+                    .environmentObject(authenticationViewModel)
             }
         }
     }
 }
+

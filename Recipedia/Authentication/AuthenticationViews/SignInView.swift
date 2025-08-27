@@ -10,7 +10,7 @@ import SwiftUI
 struct SignInView: View {
     
     @Environment(\.dismiss) var dismiss
-    @ObservedObject var authenticationViewModel: AuthenticationViewModel
+    @EnvironmentObject var authenticationViewModel: AuthenticationViewModel
     
     @State private var email: String = ""
     @State private var password: String = ""
@@ -61,5 +61,6 @@ struct SignInView: View {
 }
 
 #Preview {
-    SignInView(authenticationViewModel: AuthenticationViewModel())
+    SignInView()
+        .environmentObject(AuthenticationViewModel())
 }

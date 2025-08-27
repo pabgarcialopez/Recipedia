@@ -11,18 +11,18 @@ import FirebaseFirestore
 struct User: Codable {
     let id: String
     let email: String?
-    var firstName: String?
-    var lastName: String?
-    var bio: String?
-    var pictureURL: String?
+    var firstName: String? = nil
+    var lastName: String? = nil
+    var bio: String? = nil
+    var pictureURL: String? = nil
     
-    init(id: String, email: String?, firstName: String? = nil, lastName: String? = nil, bio: String? = nil, pictureURL: String? = nil) {
-        self.id = id
-        self.email = email
-        self.firstName = firstName
-        self.lastName = lastName
-        self.bio = bio
-        self.pictureURL = pictureURL
+    var fullName: String {
+        guard let firstName = firstName, let lastName = lastName else { return "" }
+        return firstName + " " + lastName
     }
+}
+
+extension User {
+    static let empty = User(id: "", email: "", firstName: "", lastName: "", bio: "", pictureURL: "")
 }
 

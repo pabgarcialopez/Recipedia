@@ -44,7 +44,7 @@ final class AuthenticationFirebaseDatasource {
                 
                 let newUser = User(id: uid, email: email)
                 
-                do {
+                do { // Save new user to database
                     try self.db.collection(self.usersCollection).document(uid).setData(from: newUser)
                     completion(.success(newUser))
                 } catch {
@@ -72,7 +72,6 @@ final class AuthenticationFirebaseDatasource {
                     }
                     
                     do {
-                        
                         guard let signedInUser = try snapshot?.data(as: User.self) else {
                             completion(.failure(.firestoreReadFailed(message: "Failed to decode user data")))
                             return

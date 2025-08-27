@@ -14,7 +14,7 @@ enum AuthenticationSheetView: String, Identifiable {
 
 struct AuthenticationView: View {
     
-    @ObservedObject var authenticationViewModel: AuthenticationViewModel
+    @EnvironmentObject var authenticationViewModel: AuthenticationViewModel
     @State private var authSheet: AuthenticationSheetView?
     
     var body: some View {
@@ -56,11 +56,10 @@ struct AuthenticationView: View {
         }
         .sheet(item: $authSheet) { sheet in
             switch sheet {
-                case .signUp: SignUpView(authenticationViewModel: authenticationViewModel)
-                case .signIn: SignInView(authenticationViewModel: authenticationViewModel)
+                case .signUp: SignUpView()
+                case .signIn: SignInView()
             }
         }
-        
     }
     
     func showSignUpSheetView() { authSheet = .signUp }
@@ -68,5 +67,6 @@ struct AuthenticationView: View {
 }
 
 #Preview {
-    AuthenticationView(authenticationViewModel: AuthenticationViewModel())
+    AuthenticationView()
+        .environmentObject(AuthenticationViewModel())
 }
