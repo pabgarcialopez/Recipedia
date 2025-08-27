@@ -17,12 +17,12 @@ struct User: Codable {
     var pictureURL: String? = nil
     
     var fullName: String {
-        guard let firstName = firstName, let lastName = lastName else { return "" }
+        guard let firstName = firstName, let lastName = lastName else { return "Unknown" }
         return firstName + " " + lastName
     }
 }
 
 extension User {
-    static let empty = User(id: "", email: "", firstName: "", lastName: "", bio: "", pictureURL: "")
+    static let empty = User(id: "", email: "email@example.com", firstName: "John", lastName: "Smith", bio: "Some bio", pictureURL: "")
 }
 

@@ -11,43 +11,69 @@ struct ProfileView: View {
     
     @ObservedObject var profileViewModel: ProfileViewModel
     
+    private var user: User { return profileViewModel.user }
+    
     private var profilePicture: some View {
         return profileViewModel.profilePicture
             .resizable()
-            .scaledToFit()
+            .scaledToFill()
             .padding()
-            .overlay(Circle().stroke(Color.black))
-            .clipShape(Circle())
             .frame(width: 80, height: 80)
     }
     
-    private var user: User { return profileViewModel.user }
+    private var profileCard: some View {
+        ZStack {
+            
+            RoundedRectangle(cornerRadius: 22)
+                .fill(.blue.opacity(0.15).shadow(.drop(color: .black, radius: 5, x: 5, y: 5)))
+                .stroke(.blue, lineWidth: 2)
+            
+            
+            HStack {
+                HStack {
+                    profilePicture
+                        .padding(.trailing, 5)
+                    
+                    VStack(alignment: .leading) {
+                        Text(user.fullName)
+                            .font(.title3.bold())
+                        Text(user.email ?? "example@example.com")
+                    }
+                }
+                
+                Spacer()
+                
+                NavigationLink {
+                     ProfileEditView()
+                } label: {
+                    Image(systemName: "pencil")
+                        .foregroundStyle(.black)
+                        .font(.system(size: 25))
+                        .padding(.trailing, 10)
+                }
+                
+                
+            }
+            .padding()
+        }
+    }
+    
+    
         
     var body: some View {
         NavigationStack {
-            VStack {
-                HStack {
-                    HStack {
-                        profilePicture
-                        Text(user.fullName)
-                    }
+            ScrollView {
+                VStack {
                     
-                    Spacer()
-                    NavigationLink {
-//                        ProfileEditView()
-                    } label: {
-                        Image(systemName: "pencil")
+                    profileCard
+                    
+                    Button("Log out") {
+                        profileViewModel.signOut()
                     }
                 }
                 .padding()
-                .background(.red)
-                
-                Button("Log out") {
-                    profileViewModel.signOut()
-                }
+                .frame(maxHeight: .infinity, alignment: .top)
             }
-            .padding()
-            .frame(maxHeight: .infinity, alignment: .top)
             .navigationTitle("Profile")
         }
         

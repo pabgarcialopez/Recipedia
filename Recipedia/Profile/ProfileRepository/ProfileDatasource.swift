@@ -12,13 +12,10 @@ final class ProfileDatasource {
     
     func fetchProfilePicture(for user: User, completion: @escaping (Image) -> Void) {
         guard let pictureURL = user.pictureURL else {
-            print("Here!!!")
             completion(Image(DEFAULT_PROFILE_PICTURE))
             return
         }
         
-        print("profilePicture URL: \(pictureURL)")
-
         let storageRef = Storage.storage().reference()
         let imageRef = storageRef.child("images/profilePictures/\(pictureURL)")
 
