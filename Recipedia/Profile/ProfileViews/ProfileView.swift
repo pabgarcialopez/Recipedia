@@ -92,7 +92,7 @@ struct ProfileView: View {
                 Spacer()
                 
                 NavigationLink {
-                     ProfileEditView()
+                    ProfileEditView(profileViewModel: profileViewModel)
                 } label: {
                     Image(systemName: "pencil")
                         .foregroundStyle(.black)
@@ -147,8 +147,8 @@ struct ProfileView: View {
                         ]
                     )
 
-                    
                     signOutButton
+                        .padding(.vertical, 15)
                 }
                 .padding()
                 .frame(maxHeight: .infinity, alignment: .top)

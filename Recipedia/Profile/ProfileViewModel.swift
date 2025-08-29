@@ -44,3 +44,23 @@ final class ProfileViewModel: ObservableObject {
         authenticationViewModel.signOut()
     }
 }
+
+extension ProfileViewModel {
+    static let preview: ProfileViewModel = {
+        let vm = ProfileViewModel(
+            profileRepository: ProfileRepository(),
+            authenticationViewModel: AuthenticationViewModel()
+        )
+        vm.user = User(
+            id: "preview123",
+            email: "pablo@example.com",
+            firstName: "Pablo",
+            lastName: "García",
+            bio: "SwiftUI enjoyer",
+            pictureURL: nil
+        )
+        vm.profilePicture = Image(systemName: "person.circle.fill")
+        return vm
+    }()
+}
+
