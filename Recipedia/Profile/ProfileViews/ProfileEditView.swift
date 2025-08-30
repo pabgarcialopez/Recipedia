@@ -13,11 +13,11 @@ struct LabeledTextField: View {
     let axis: Axis?
     @Binding var text: String
     
-    init(label: String, text: Binding<String?>, axis: Axis? = nil) {
+    init(label: String, text: Binding<String>, axis: Axis? = nil) {
         self.label = label
         self.axis = axis
         self._text = Binding(
-            get: { text.wrappedValue ?? "" },
+            get: { text.wrappedValue },
             set: { text.wrappedValue = $0 }
         )
     }
@@ -31,7 +31,6 @@ struct LabeledTextField: View {
                 TextField(label, text: $text, axis: axis)
             } else {
                 TextField(label, text: $text)
-                    .bold()
             }
         }
         .padding(.init(top: 10, leading: 15, bottom: 10, trailing: 15))
@@ -49,12 +48,35 @@ struct ProfileEditView: View {
     
     private var user: User { profileViewModel.user }
     
+    // Store the original user to know whether there were any changes
+    @State private var originalUser: User
     @State private var draftPicture: UIImage? = nil
     @State private var selectedPicture: PhotosPickerItem? = nil
     
-//    let email: String?
-//    var bio: String? = nil
-//    var pictureURL: String? = nil
+    
+    
+    private var hasChanges: Bool {
+        let current = profileViewModel.user
+        
+        print("DEBUG", user.bio, originalUser.bio) // 👈 See what it compares
+
+        
+        let userChanged =
+            current.firstName != originalUser.firstName ||
+            current.lastName  != originalUser.lastName ||
+            current.bio       != originalUser.bio
+        
+        let pictureChanged = draftPicture != nil
+        
+        return userChanged || pictureChanged
+    }
+
+    
+    init(profileViewModel: ProfileViewModel) {
+        self.profileViewModel = profileViewModel
+        self._originalUser = State(initialValue: profileViewModel.user)
+
+    }
     
     private var photosPicker: some View {
         PhotosPicker(selection: $selectedPicture, matching: .images) {
@@ -70,7 +92,7 @@ struct ProfileEditView: View {
                             .scaledToFill()
                     }
                 }
-                .frame(width: 60, height: 60)
+                .frame(width: 85, height: 85)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(Color.black))
 
@@ -90,12 +112,7 @@ struct ProfileEditView: View {
     
     var body: some View {
         VStack {
-            
-            VStack(spacing: 15) {
-                photosPicker
-                Text(user.fullName)
-                    .font(.title2.bold())
-            }
+            photosPicker
             
             Divider()
                 .padding()
@@ -107,9 +124,17 @@ struct ProfileEditView: View {
                 LabeledTextField(label: "Biography", text: $profileViewModel.user.bio, axis: .vertical)
             }
         }
-        .navigationTitle("Edit your profile")
         .frame(maxHeight: .infinity, alignment: .top)
-        .padding()
+        .padding(25)
+        .navigationTitle("Edit your profile")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save", action: saveChanges)
+                    .disabled(!hasChanges)
+            }
+        }
+        
     }
     
     func loadImage(from item: PhotosPickerItem?) {
@@ -118,6 +143,10 @@ struct ProfileEditView: View {
                 self.draftPicture = UIImage(data: data)
             }
         }
+    }
+    
+    func saveChanges() {
+        
     }
 }
 

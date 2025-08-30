@@ -7,25 +7,6 @@
 
 import SwiftUI
 
-//struct SettingsSection<Content: View>: View {
-//    let title: String
-//    @ViewBuilder let content: () -> Content
-//    
-//    var body: some View {
-//        VStack(alignment: .leading, spacing: 0) {
-//            Text(title)
-//                .font(.headline)
-//                .padding(.bottom, 8)
-//            
-//            VStack(spacing: 0) {
-//                content()
-//            }
-//            .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
-//            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(.separator)))
-//        }
-//    }
-//}
-
 struct SettingsSection: View {
     let title: String
     let items: [AnyView]
@@ -85,7 +66,7 @@ struct ProfileView: View {
                     VStack(alignment: .leading) {
                         Text(user.fullName)
                             .font(.title3.bold())
-                        Text(user.email ?? "example@example.com")
+                        Text(user.email)
                     }
                 }
                 

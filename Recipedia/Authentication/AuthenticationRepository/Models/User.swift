@@ -8,17 +8,18 @@
 import Foundation
 import FirebaseFirestore
 
-struct User: Codable {
+// Conform
+struct User: Codable, Equatable {
     let id: String
-    var email: String?
-    var firstName: String? = nil
-    var lastName: String? = nil
-    var bio: String? = nil
+    var email: String
+    var firstName: String = ""
+    var lastName: String = ""
+    var bio: String = ""
     var pictureURL: String? = nil
     
     var fullName: String {
-        guard let firstName = firstName, let lastName = lastName else { return "Unknown" }
-        return firstName + " " + lastName
+        guard !firstName.isEmpty || !lastName.isEmpty else { return "Unknown" }
+        return (firstName + " " + lastName).trimmingCharacters(in: .whitespaces)
     }
 }
 
