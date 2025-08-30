@@ -12,7 +12,6 @@ import FirebaseFirestore
 final class AuthenticationFirebaseDatasource {
     
     let db = Firestore.firestore()
-    let usersCollection = "users"
     
     func getCurrentUser(completion: @escaping (User?) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -21,7 +20,7 @@ final class AuthenticationFirebaseDatasource {
         }
         
         // Try to get user with user id "uid".
-        self.db.collection(self.usersCollection).document(uid).getDocument { snapshot, error in
+        self.db.collection(USERS_COLLECTION).document(uid).getDocument { snapshot, error in
             if let _ = error { completion(nil) }
             
             if let user = try? snapshot?.data(as: User.self) { completion(user) }
@@ -45,7 +44,7 @@ final class AuthenticationFirebaseDatasource {
                 let newUser = User(id: uid, email: email)
                 
                 do { // Save new user to database
-                    try self.db.collection(self.usersCollection).document(uid).setData(from: newUser)
+                    try self.db.collection(USERS_COLLECTION).document(uid).setData(from: newUser)
                     completion(.success(newUser))
                 } catch {
                     completion(.failure(.firestoreWriteFailed(message: error.localizedDescription)))
@@ -65,7 +64,7 @@ final class AuthenticationFirebaseDatasource {
                     return
                 }
                 
-                self.db.collection(self.usersCollection).document(uid).getDocument { snapshot, error in
+                self.db.collection(USERS_COLLECTION).document(uid).getDocument { snapshot, error in
                     if let error = error {
                         completion(.failure(.firestoreReadFailed(message: error.localizedDescription)))
                         return

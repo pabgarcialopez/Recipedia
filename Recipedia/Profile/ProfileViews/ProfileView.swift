@@ -35,8 +35,6 @@ struct SettingsSection: View {
     }
 }
 
-
-
 struct ProfileView: View {
     
     @ObservedObject var profileViewModel: ProfileViewModel
@@ -44,7 +42,7 @@ struct ProfileView: View {
     private var user: User { return profileViewModel.user }
     
     private var profilePicture: some View {
-        return profileViewModel.profilePicture
+        return Image(uiImage: profileViewModel.profilePicture)
             .resizable()
             .scaledToFill()
             .padding()

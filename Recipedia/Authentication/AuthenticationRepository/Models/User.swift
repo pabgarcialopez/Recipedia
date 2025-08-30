@@ -15,7 +15,7 @@ struct User: Codable, Equatable {
     var firstName: String = ""
     var lastName: String = ""
     var bio: String = ""
-    var pictureURL: String? = nil
+    var pictureURL: String = ""
     
     var fullName: String {
         guard !firstName.isEmpty || !lastName.isEmpty else { return "Unknown" }

@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - App meta data
-let APP_NAME = "Recipe App"
+let APP_NAME = "Recipedia"
 
 // MARK: - Recipe defaults
 let DEFAULT_RECIPE_NAME = ""
@@ -45,6 +45,10 @@ let ABOUT = "About this app"
 let PRIVACY_POLICY = "Privacy policy"
 let LEGAL_DISCLAIMER = "Legal disclaimer"
 let TERMS_AND_CONDITIONS = "Terms and conditions"
+
+// MARK: - Firestore collections
+let USERS_COLLECTION = "users"
+
 
 
 

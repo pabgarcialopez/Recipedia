@@ -10,11 +10,13 @@ import PhotosUI
 
 struct LabeledTextField: View {
     let label: String
+    let prompt: String
     let axis: Axis?
     @Binding var text: String
     
-    init(label: String, text: Binding<String>, axis: Axis? = nil) {
+    init(label: String, prompt: String, text: Binding<String>, axis: Axis? = nil) {
         self.label = label
+        self.prompt = prompt
         self.axis = axis
         self._text = Binding(
             get: { text.wrappedValue },
@@ -28,9 +30,9 @@ struct LabeledTextField: View {
                 .foregroundStyle(.separator)
             
             if let axis = axis {
-                TextField(label, text: $text, axis: axis)
+                TextField(prompt, text: $text, axis: axis)
             } else {
-                TextField(label, text: $text)
+                TextField(prompt, text: $text)
             }
         }
         .padding(.init(top: 10, leading: 15, bottom: 10, trailing: 15))
@@ -41,60 +43,53 @@ struct LabeledTextField: View {
     }
 }
 
-
 struct ProfileEditView: View {
     
+    @Environment(\.dismiss) var dismiss
     @ObservedObject var profileViewModel: ProfileViewModel
     
     private var user: User { profileViewModel.user }
     
     // Store the original user to know whether there were any changes
-    @State private var originalUser: User
-    @State private var draftPicture: UIImage? = nil
+    @State private var modifiedUser: User
+    @State private var originalProfilePicture: UIImage
     @State private var selectedPicture: PhotosPickerItem? = nil
-    
-    
-    
-    private var hasChanges: Bool {
-        let current = profileViewModel.user
-        
-        print("DEBUG", user.bio, originalUser.bio) // 👈 See what it compares
-
-        
-        let userChanged =
-            current.firstName != originalUser.firstName ||
-            current.lastName  != originalUser.lastName ||
-            current.bio       != originalUser.bio
-        
-        let pictureChanged = draftPicture != nil
-        
-        return userChanged || pictureChanged
-    }
-
     
     init(profileViewModel: ProfileViewModel) {
         self.profileViewModel = profileViewModel
-        self._originalUser = State(initialValue: profileViewModel.user)
-
+        self._modifiedUser = State(initialValue: profileViewModel.user)
+        self._originalProfilePicture = State(initialValue: profileViewModel.profilePicture)
     }
+    
+    @State private var showingErrorAlert = false
+    @State private var showingSuccessAlert = false
+
+    private var profilePictureHasChanges: Bool {
+        return originalProfilePicture.pngData() != profileViewModel.profilePicture.pngData()
+    }
+    
+    private var userInfoHasChanges: Bool {
+        let original = profileViewModel.user
+        
+        let userChanged =
+            original.firstName != modifiedUser.firstName ||
+            original.lastName  != modifiedUser.lastName ||
+            original.bio       != modifiedUser.bio
+
+        return userChanged
+    }
+
     
     private var photosPicker: some View {
         PhotosPicker(selection: $selectedPicture, matching: .images) {
             ZStack(alignment: .bottomTrailing) {
-                Group {
-                    if let draftPicture {
-                        Image(uiImage: draftPicture)
-                            .resizable()
-                            .scaledToFill()
-                    } else {
-                        profileViewModel.profilePicture
-                            .resizable()
-                            .scaledToFill()
-                    }
-                }
-                .frame(width: 85, height: 85)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(Color.black))
+                
+                Image(uiImage: profileViewModel.profilePicture)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 85, height: 85)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.black))
 
                 Circle()
                     .fill(Color.white)
@@ -107,21 +102,24 @@ struct ProfileEditView: View {
                     .offset(x: 5, y: 5)
             }
         }
-        .onChange(of: selectedPicture) { loadImage(from: selectedPicture)}
+        .onChange(of: selectedPicture) { updateProfilePicture() }
     }
     
     var body: some View {
         VStack {
-            photosPicker
+            VStack(spacing: 10) {
+                photosPicker
+                Button("Delete", action: deleteProfilePicture)
+            }
             
             Divider()
                 .padding()
             
             // Details
             VStack(spacing: 15) {
-                LabeledTextField(label: "First name", text: $profileViewModel.user.firstName)
-                LabeledTextField(label: "Last name", text: $profileViewModel.user.lastName)
-                LabeledTextField(label: "Biography", text: $profileViewModel.user.bio, axis: .vertical)
+                LabeledTextField(label: "First name", prompt: "Enter your first name", text: $modifiedUser.firstName)
+                LabeledTextField(label: "Last name", prompt: "Enter your last name", text: $modifiedUser.lastName)
+                LabeledTextField(label: "Biography", prompt: "Enter your biography", text: $modifiedUser.bio, axis: .vertical)
             }
         }
         .frame(maxHeight: .infinity, alignment: .top)
@@ -131,22 +129,31 @@ struct ProfileEditView: View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save", action: saveChanges)
-                    .disabled(!hasChanges)
+                    .disabled(!userInfoHasChanges)
             }
         }
-        
+        .alert("Error", isPresented: $showingErrorAlert, actions: {}, message: {
+            if let errorMessage = profileViewModel.errorMessage {
+                Text(errorMessage) // Not nil since showingAlertError = true
+            }
+        })
+        .alert(profileViewModel.successMessage ?? "Success!", isPresented: $showingSuccessAlert, actions: {})
     }
     
-    func loadImage(from item: PhotosPickerItem?) {
-        Task {
-            if let data = try? await item?.loadTransferable(type: Data.self) {
-                self.draftPicture = UIImage(data: data)
-            }
-        }
+    func showErrorAlert() { self.showingErrorAlert = profileViewModel.errorMessage != nil }
+    func showSuccessAlert() { self.showingSuccessAlert = profileViewModel.successMessage != nil }
+    
+    func deleteProfilePicture() {
+        profileViewModel.deleteProfilePicture()
+    }
+    
+    func updateProfilePicture() {
+        profileViewModel.updateProfilePicture(from: selectedPicture)
     }
     
     func saveChanges() {
-        
+        profileViewModel.updateUser(user: modifiedUser)
+        dismiss()
     }
 }
 

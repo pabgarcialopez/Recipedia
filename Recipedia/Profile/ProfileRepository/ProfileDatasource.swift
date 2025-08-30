@@ -7,24 +7,57 @@
 
 import SwiftUI
 import FirebaseStorage
+import FirebaseFirestore
 
 final class ProfileDatasource {
     
-    func fetchProfilePicture(for user: User, completion: @escaping (Image) -> Void) {
-        guard let pictureURL = user.pictureURL else {
-            completion(Image(DEFAULT_PROFILE_PICTURE))
+    let storageRef = Storage.storage().reference()
+    let db = Firestore.firestore()
+    
+    // TODO: This could be done in Storage with a general get data from function
+    func fetchProfilePicture(for user: User, completion: @escaping (UIImage) -> Void) {
+        guard !user.pictureURL.isEmpty else {
+            completion(UIImage(resource: .defaultProfilePicture))
             return
         }
         
-        let storageRef = Storage.storage().reference()
-        let imageRef = storageRef.child("images/profilePictures/\(pictureURL)")
+        let imageRef = storageRef.child("images/profilePictures/\(user.pictureURL)")
 
         imageRef.getData(maxSize: 5 * 1024 * 1024) { data, error in
             if let data = data, let uiImage = UIImage(data: data) {
-                completion(Image(uiImage: uiImage))
+                completion(uiImage)
             } else {
-                completion(Image(DEFAULT_PROFILE_PICTURE))
+                completion(UIImage(resource: .defaultProfilePicture))
             }
+        }
+    }
+    
+    func updateProfilePicture(image: UIImage, imageID: String, completion: @escaping (Result<String, Error>) -> Void) -> String {
+        // Upload image to database
+        if let data = image.jpegData(compressionQuality: 0.8) {
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpg"
+            _ = uploadData(data, to: "images/profilePictures/\(imageID)", metadata: metadata, completion: completion)
+        }
+        
+        return imageID
+    }
+    
+    func deleteProfilePicture(path: String, completion: @escaping (Error?) -> Void) {
+        deleteData(path: path, completion: completion)
+    }
+    
+    // TODO: delegate to Storage (see updateProfilePicture)
+    func updateUser(user: User, completion: @escaping (Result<String, Error>) -> Void) {
+        do {
+            // merge = true so that the entire user is not overwritten.
+            try db.collection(USERS_COLLECTION).document(user.id).setData(from: user, merge: true) { error in
+                if let error = error { completion(.failure(error)) }
+                else { completion(.success("User updated correctly")) }
+            }
+        } catch {
+            completion(.failure(error))
+            return
         }
     }
 }
