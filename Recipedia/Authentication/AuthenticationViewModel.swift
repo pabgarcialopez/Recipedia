@@ -54,4 +54,12 @@ final class AuthenticationViewModel: ObservableObject {
             print("Error while signing out: \(error)")
         }
     }
+    
+    func updateEmail(to newEmail: String, completion: @escaping (Result<String, Error>) -> Void) {
+        authenticationRepository.updateEmail(to: newEmail, completion: completion)
+    }
+    
+    func updatePassword(to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
+        authenticationRepository.updatePassword(to: newPassword, completion: completion)
+    }
 }

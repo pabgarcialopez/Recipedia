@@ -29,4 +29,12 @@ final class AuthenticationRepository {
     func signOut() throws {
         try authenticationFirebaseDatasource.signOut()
     }
+    
+    func updateEmail(to newEmail: String, completion: @escaping (Result<String, Error>) -> Void) {
+        authenticationFirebaseDatasource.updateEmail(to: newEmail, completion: completion)
+    }
+    
+    func updatePassword(to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
+        authenticationFirebaseDatasource.updatePassword(to: newPassword, completion: completion)
+    }
 }

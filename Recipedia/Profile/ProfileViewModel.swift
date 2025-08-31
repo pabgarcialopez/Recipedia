@@ -94,6 +94,29 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
+    func updateEmail(to newEmail: String) {
+        authenticationViewModel.updateEmail(to: newEmail) { result in
+            switch result {
+            case .success(let message):
+                self.user.email = newEmail // Save locally
+                self.successMessage = message
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+            }
+        }
+    }
+    
+    func updatePassword(to newPassword: String, authenticationViewModel: AuthenticationViewModel) {
+        authenticationViewModel.updatePassword(to: newPassword) { result in
+            switch result {
+            case .success(let message):
+                self.successMessage = message
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
+            }
+        }
+    }
+    
     func signOut() {
         authenticationViewModel.signOut()
     }

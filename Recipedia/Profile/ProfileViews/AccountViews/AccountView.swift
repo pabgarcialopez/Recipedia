@@ -7,20 +7,27 @@
 
 import SwiftUI
 
+enum AccountSheetView: String, Identifiable {
+    case changeEmail, changePassword
+    var id: String { return rawValue }
+}
+
 struct AccountView: View {
     
     @ObservedObject var profileViewModel: ProfileViewModel
     
+    @State private var accountSheetView: AccountSheetView? = nil
+    
     var body: some View {
         VStack(spacing: 20) {
             LinksMenu(items: [
-                AnyView(Button(action: changeEmail) {
+                AnyView(Button(action: showChangeEmailView) {
                     Text("Change email")
                         .padding()
                         .frame(maxWidth: .infinity)
                 }),
                 
-                AnyView(Button(action: changePassword) {
+                AnyView(Button(action: showChangePasswordView) {
                     Text("Change password")
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -41,15 +48,17 @@ struct AccountView: View {
         .navigationTitle("Account")
         .navigationBarTitleDisplayMode(.inline)
         .frame(maxHeight: .infinity, alignment: .top)
+        .sheet(item: $accountSheetView) { accountSheetView in
+            switch accountSheetView {
+                case .changeEmail: ChangeEmailView(profileViewModel: profileViewModel)
+                case .changePassword: ChangePasswordView(profileViewModel: profileViewModel)
+            }
+        }
     }
     
-    func changeEmail() {
-        
-    }
+    func showChangeEmailView() { accountSheetView = .changeEmail }
     
-    func changePassword() {
-        
-    }
+    func showChangePasswordView() { accountSheetView = .changePassword }
     
     func deleteAccount() {
         

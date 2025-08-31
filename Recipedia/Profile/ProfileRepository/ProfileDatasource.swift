@@ -61,13 +61,4 @@ final class ProfileDatasource {
             return
         }
     }
-    
-    
-    
-    // MARK: - Change email, password and delete account
-    
-    func updateEmail(to newEmail: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
-        
-    }
-    
 }

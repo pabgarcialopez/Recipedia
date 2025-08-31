@@ -52,39 +52,59 @@ final class AuthenticationFirebaseDatasource {
             }
         }
         
-        func signIn(email: String, password: String, completion: @escaping (Result<User, AuthenticationError>) -> Void) {
-            Auth.auth().signIn(withEmail: email, password: password) { result, error in
+    func signIn(email: String, password: String, completion: @escaping (Result<User, AuthenticationError>) -> Void) {
+        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+            if let error = error {
+                completion(.failure(.authFailed(message: error.localizedDescription)))
+                return
+            }
+            
+            guard let uid = result?.user.uid else {
+                completion(.failure(.unknown))
+                return
+            }
+            
+            self.db.collection(USERS_COLLECTION).document(uid).getDocument { snapshot, error in
                 if let error = error {
-                    completion(.failure(.authFailed(message: error.localizedDescription)))
+                    completion(.failure(.firestoreReadFailed(message: error.localizedDescription)))
                     return
                 }
                 
-                guard let uid = result?.user.uid else {
-                    completion(.failure(.unknown))
-                    return
-                }
-                
-                self.db.collection(USERS_COLLECTION).document(uid).getDocument { snapshot, error in
-                    if let error = error {
-                        completion(.failure(.firestoreReadFailed(message: error.localizedDescription)))
+                do {
+                    guard let signedInUser = try snapshot?.data(as: User.self) else {
+                        completion(.failure(.firestoreReadFailed(message: "Failed to decode user data")))
                         return
                     }
+                    completion(.success(signedInUser))
                     
-                    do {
-                        guard let signedInUser = try snapshot?.data(as: User.self) else {
-                            completion(.failure(.firestoreReadFailed(message: "Failed to decode user data")))
-                            return
-                        }
-                        completion(.success(signedInUser))
-                        
-                    } catch {
-                        completion(.failure(.firestoreReadFailed(message: error.localizedDescription)))
-                    }
+                } catch {
+                    completion(.failure(.firestoreReadFailed(message: error.localizedDescription)))
                 }
             }
         }
-        
-        func signOut() throws {
-            try Auth.auth().signOut()
+    }
+    
+    func signOut() throws {
+        try Auth.auth().signOut()
+    }
+    
+    func updateEmail(to newEmail: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let user = Auth.auth().currentUser else {
+            completion(.failure(URLError(.userAuthenticationRequired)))
+            return
         }
+        
+        user.sendEmailVerification(beforeUpdatingEmail: newEmail)
+        completion(.success("To change your email, you need to verify it first. Check your \(newEmail) inbox."))
+    }
+    
+    func updatePassword(to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let user = Auth.auth().currentUser else {
+            completion(.failure(URLError(.userAuthenticationRequired)))
+            return
+        }
+            
+        user.updatePassword(to: newPassword)
+        completion(.success("Password changed successfully"))
+    }
 }
