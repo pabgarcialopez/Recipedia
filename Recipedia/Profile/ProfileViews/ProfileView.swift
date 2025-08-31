@@ -7,34 +7,6 @@
 
 import SwiftUI
 
-struct SettingsSection: View {
-    let title: String
-    let items: [AnyView]
-    
-    init(_ title: String, items: [AnyView]) {
-        self.title = title
-        self.items = items
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(title)
-                .font(.headline)
-                .padding(.bottom, 8)
-            
-            VStack(spacing: 0) {
-                ForEach(items.indices, id: \.self) { idx in
-                    items[idx]
-                    if idx < items.count - 1 { Divider() }
-                }
-            }
-            .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(.separator)))
-        }
-        .padding(.vertical, 6)
-    }
-}
-
 struct ProfileView: View {
     
     @ObservedObject var profileViewModel: ProfileViewModel
@@ -110,19 +82,19 @@ struct ProfileView: View {
                     
                     profileCard
                     
-                    SettingsSection("Your account", items: [
-                            AnyView(profileNavigationLink("Account", icon: "person.fill", destination: EmptyView())),
+                    LinksMenu("Your account", items: [
+                        AnyView(ProfileNavigationLink(title: "Account", icon: "person.fill", destination: AccountView(profileViewModel: profileViewModel))),
                         ]
                     )
                     
-                    SettingsSection("App related", items: [
-                            AnyView(profileNavigationLink("Favorites", icon: "heart.fill", destination: EmptyView())),
+                    LinksMenu("App related", items: [
+                        AnyView(ProfileNavigationLink(title: "Favorites", icon: "heart.fill", destination: EmptyView())),
                         ]
                     )
                     
-                    SettingsSection("Support & Info", items: [
-                            AnyView(profileNavigationLink("Terms and conditions", icon: "list.bullet", destination: EmptyView())),
-                            AnyView(profileNavigationLink("About the app", icon: "info.circle", destination: EmptyView()))
+                    LinksMenu("Support & Info", items: [
+                        AnyView(ProfileNavigationLink(title: "Terms and conditions", icon: "list.bullet", destination: EmptyView())),
+                        AnyView(ProfileNavigationLink(title: "About the app", icon: "info.circle", destination: EmptyView()))
                         ]
                     )
 
@@ -135,30 +107,6 @@ struct ProfileView: View {
             .navigationTitle("Profile")
         }
     }
-    
-    func profileNavigationLink<Content: View>(_ title: String, icon: String, destination: Content) -> some View {
-        return NavigationLink {
-            destination
-        } label: {
-            HStack {
-                Image(systemName: icon)
-                    .padding(8)
-                    .background(Color(UIColor.systemGray4))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .frame(width: 30)
-                Text(title)
-                    .padding(.leading, 5)
-                Spacer()
-                Image(systemName: "chevron.forward")
-                    .padding(.trailing, 4)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundStyle(.black)
-            .padding(.vertical, 12)
-            .padding(.horizontal, 15)
-        }
-    }
-
 }
 
 #Preview {

@@ -55,14 +55,17 @@ struct ProfileEditView: View {
     @State private var originalProfilePicture: UIImage
     @State private var selectedPicture: PhotosPickerItem? = nil
     
+    @State private var alertMessage = ""
+    @State private var isShowingAlert = false
+    @State private var alertTitle = ""
+
+    
     init(profileViewModel: ProfileViewModel) {
         self.profileViewModel = profileViewModel
         self._modifiedUser = State(initialValue: profileViewModel.user)
         self._originalProfilePicture = State(initialValue: profileViewModel.profilePicture)
     }
     
-    @State private var showingErrorAlert = false
-    @State private var showingSuccessAlert = false
 
     private var profilePictureHasChanges: Bool {
         return originalProfilePicture.pngData() != profileViewModel.profilePicture.pngData()
@@ -128,20 +131,26 @@ struct ProfileEditView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Save", action: saveChanges)
+                Button("Save", action: updateUser)
                     .disabled(!userInfoHasChanges)
             }
         }
-        .alert("Error", isPresented: $showingErrorAlert, actions: {}, message: {
-            if let errorMessage = profileViewModel.errorMessage {
-                Text(errorMessage) // Not nil since showingAlertError = true
-            }
-        })
-        .alert(profileViewModel.successMessage ?? "Success!", isPresented: $showingSuccessAlert, actions: {})
+        .onChange(of: profileViewModel.errorMessage) { _, newValue in
+            if let message = newValue { showAlert(title: "Error", message: message) }
+        }
+        .onChange(of: profileViewModel.successMessage) { _, newValue in
+            if let message = newValue { showAlert(title: "Success", message: message) }
+        }
+        .alert(alertTitle, isPresented: $isShowingAlert, actions: {
+            Button("OK", role: .cancel) { dismiss() }
+        }, message: { Text(alertMessage) })
     }
     
-    func showErrorAlert() { self.showingErrorAlert = profileViewModel.errorMessage != nil }
-    func showSuccessAlert() { self.showingSuccessAlert = profileViewModel.successMessage != nil }
+    func showAlert(title: String, message: String) {
+        alertTitle = title
+        alertMessage = message
+        isShowingAlert = true
+    }
     
     func deleteProfilePicture() {
         profileViewModel.deleteProfilePicture()
@@ -151,9 +160,8 @@ struct ProfileEditView: View {
         profileViewModel.updateProfilePicture(from: selectedPicture)
     }
     
-    func saveChanges() {
+    func updateUser() {
         profileViewModel.updateUser(user: modifiedUser)
-        dismiss()
     }
 }
 

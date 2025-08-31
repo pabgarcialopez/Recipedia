@@ -47,8 +47,9 @@ final class ProfileDatasource {
         deleteData(path: path, completion: completion)
     }
     
-    // TODO: delegate to Storage (see updateProfilePicture)
+    // TODO: delegate to new Database file
     func updateUser(user: User, completion: @escaping (Result<String, Error>) -> Void) {
+        
         do {
             // merge = true so that the entire user is not overwritten.
             try db.collection(USERS_COLLECTION).document(user.id).setData(from: user, merge: true) { error in
@@ -60,4 +61,13 @@ final class ProfileDatasource {
             return
         }
     }
+    
+    
+    
+    // MARK: - Change email, password and delete account
+    
+    func updateEmail(to newEmail: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
+        
+    }
+    
 }

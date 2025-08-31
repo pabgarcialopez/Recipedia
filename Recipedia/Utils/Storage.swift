@@ -10,26 +10,6 @@ import FirebaseStorage
 
 let storageRef = Storage.storage().reference()
 
-enum DataUploadError: LocalizedError {
-    case urlIsNil
-    case putData(message: String)
-    case downloadURL(message: String)
-    case unknown
-
-    var errorDescription: String? {
-        switch self {
-        case .putData(let message):
-            return "Upload task error: \(message)"
-        case .urlIsNil:
-            return "Returned URL is nil."
-        case .downloadURL(message: let message):
-            return "Error when downloading URL: \(message)"
-        case .unknown:
-            return "An unknown error occurred."
-        }
-    }
-}
-
 func deleteData(path: String, completion: @escaping ((any Error)?) -> Void) {
     let deletionRef = storageRef.child(path)
     Task { @MainActor in // To make deletion in main thread. Necessary.
