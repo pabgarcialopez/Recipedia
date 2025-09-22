@@ -103,7 +103,7 @@ struct ProfileEditView: View {
         .onChange(of: profileViewModel.errorMessage) { _, newValue in
             if let message = newValue { showAlert(title: "Error", message: message) }
         }
-        .onChange(of: profileViewModel.successMessage) { _, newValue in
+        .onChange(of: profileViewModel.profileMessage) { _, newValue in
             if let message = newValue { showAlert(title: "Success", message: message) }
         }
         .alert(alertTitle, isPresented: $isShowingAlert, actions: {

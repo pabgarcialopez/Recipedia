@@ -93,9 +93,15 @@ final class AuthenticationFirebaseDatasource {
             completion(.failure(URLError(.userAuthenticationRequired)))
             return
         }
-        
-        user.sendEmailVerification(beforeUpdatingEmail: newEmail)
-        completion(.success("To change your email, you need to verify it first. Check your \(newEmail) inbox."))
+
+        Task { @MainActor in
+            do {
+                try await user.sendEmailVerification(beforeUpdatingEmail: newEmail)
+                completion(.success("To change your email, you need to verify it first. Check your \(newEmail) inbox."))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
     
     func updatePassword(to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {

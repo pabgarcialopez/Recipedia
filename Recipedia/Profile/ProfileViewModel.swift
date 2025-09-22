@@ -15,11 +15,12 @@ final class ProfileViewModel: ObservableObject {
 
     @Published var user: User
     @Published var profilePicture: UIImage = UIImage(resource: .defaultProfilePicture)
-    @Published var successMessage: String? = nil
+    @Published var authMessage: String? = nil
+    @Published var profileMessage: String? = nil
     @Published var errorMessage: String? = nil
     
     private let profileRepository: ProfileRepository
-    private let authenticationViewModel: AuthenticationViewModel
+    let authenticationViewModel: AuthenticationViewModel
     
     init(profileRepository: ProfileRepository = ProfileRepository(), authenticationViewModel: AuthenticationViewModel) {
         
@@ -41,7 +42,7 @@ final class ProfileViewModel: ObservableObject {
         profileRepository.updateUser(user: user) { result in
             switch result {
                 case .success(let message):
-                    self.successMessage = message
+                    self.profileMessage = message
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
             }
@@ -83,7 +84,7 @@ final class ProfileViewModel: ObservableObject {
             let newURL = profileRepository.updateProfilePicture(image: profilePicture, imageID: imageID) { result in
                 switch result {
                     case .success(let message):
-                        self.successMessage = message
+                        self.profileMessage = message
                     case .failure(let error):
                         self.errorMessage = error.localizedDescription
                 }
@@ -97,11 +98,12 @@ final class ProfileViewModel: ObservableObject {
     func updateEmail(to newEmail: String) {
         authenticationViewModel.updateEmail(to: newEmail) { result in
             switch result {
-            case .success(let message):
-                self.user.email = newEmail // Save locally
-                self.successMessage = message
-            case .failure(let error):
-                self.errorMessage = error.localizedDescription
+                case .success(let message):
+//                    self.user.email = newEmail // Save locally
+//                    self.updateUser(user: self.user)
+                    self.authMessage = message
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
             }
         }
     }
@@ -110,7 +112,7 @@ final class ProfileViewModel: ObservableObject {
         authenticationViewModel.updatePassword(to: newPassword) { result in
             switch result {
             case .success(let message):
-                self.successMessage = message
+                self.authMessage = message
             case .failure(let error):
                 self.errorMessage = error.localizedDescription
             }

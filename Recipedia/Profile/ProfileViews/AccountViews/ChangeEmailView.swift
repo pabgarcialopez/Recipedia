@@ -35,7 +35,6 @@ struct ChangeEmailView: View {
             }
             
             Section {
-                
                 if !indication.isEmpty {
                     Text(indication)
                         .font(.caption)
@@ -51,6 +50,11 @@ struct ChangeEmailView: View {
             Button("OK") { dismiss() }
         }, message: { Text(alertMessage) })
         .onChange(of: newEmail, updateIndication)
+        .onChange(of: profileViewModel.authMessage) { _, newValue in
+            if let message = newValue {
+                showAlert(title: "Success", message: message)
+            }
+        }
         .navigationTitle("Change your email")
         .navigationBarTitleDisplayMode(.inline)
         
