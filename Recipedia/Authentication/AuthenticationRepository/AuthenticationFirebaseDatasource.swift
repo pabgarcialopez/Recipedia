@@ -71,10 +71,18 @@ final class AuthenticationFirebaseDatasource {
                 }
                 
                 do {
-                    guard let signedInUser = try snapshot?.data(as: User.self) else {
+                    guard var signedInUser = try snapshot?.data(as: User.self) else {
                         completion(.failure(.firestoreReadFailed(message: "Failed to decode user data")))
                         return
                     }
+                    
+                    // When a user changes emails, we need to update
+                    // its email in the database (authUser != databaseUser)
+                    if signedInUser.email != email {
+                        signedInUser.email = email
+                        updateUser(user: signedInUser)
+                    }
+                    
                     completion(.success(signedInUser))
                     
                 } catch {
@@ -97,7 +105,7 @@ final class AuthenticationFirebaseDatasource {
         Task { @MainActor in
             do {
                 try await user.sendEmailVerification(beforeUpdatingEmail: newEmail)
-                completion(.success("To change your email, you need to verify it first. Check your \(newEmail) inbox."))
+                completion(.success("Check your \(newEmail) inbox to verify your email."))
             } catch {
                 completion(.failure(error))
             }

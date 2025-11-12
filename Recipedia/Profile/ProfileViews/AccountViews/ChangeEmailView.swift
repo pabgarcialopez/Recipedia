@@ -33,7 +33,7 @@ struct ChangeEmailView: View {
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled(true)
             }
-            
+                        
             Section {
                 if !indication.isEmpty {
                     Text(indication)
@@ -41,19 +41,34 @@ struct ChangeEmailView: View {
                         .foregroundStyle(.red)
                 }
                 
-                Button("Save", action: updateEmail)
+                Button("Save", action: {
+                    updateEmail()
+                    showAlert(
+                        title: "Next steps",
+                        message: "Please go to your \(newEmail) mailbox and verify your new email. You will now be logged out.")
+                })
                     .disabled(disableSaveButton())
                     .frame(maxWidth: .infinity, alignment: .center)
             }
+            
+            VStack(alignment: .leading, spacing: 0) {
+                Text("When saving your changes, you will be logged out from this app and asked to verify your new email.")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            .listRowBackground(Color.clear)
         }
         .alert(alertTitle, isPresented: $alertShowing, actions: {
-            Button("OK") { dismiss() }
+            Button("OK") {
+                profileViewModel.signOut()
+            }
         }, message: { Text(alertMessage) })
         .onChange(of: newEmail, updateIndication)
         .onChange(of: profileViewModel.authMessage) { _, newValue in
-            if let message = newValue {
-                showAlert(title: "Success", message: message)
-            }
+            guard let message = newValue else { return }
+            showAlert(title: "Success", message: message)
+            profileViewModel.authMessage = nil // Reset so future changes fire again
+            
         }
         .navigationTitle("Change your email")
         .navigationBarTitleDisplayMode(.inline)

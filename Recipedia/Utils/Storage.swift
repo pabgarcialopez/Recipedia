@@ -25,31 +25,42 @@ func uploadData(
     _ data: Data,
     to path: String,
     metadata: StorageMetadata? = nil,
-    completion: @escaping (Result<String, Error>) -> Void)
--> StorageUploadTask {
+    completion: @escaping (Result<String, Error>) -> Void
+) -> StorageUploadTask {
     
     let dataRef = storageRef.child(path)
     
-    // Upload task is returned.
-    return dataRef.putData(data, metadata: metadata) { metadata, error in
+    // Upload task is returned so the caller can observe progress or cancel if needed
+    let uploadTask = dataRef.putData(data, metadata: metadata) { metadata, error in
         
         if let error = error {
             completion(.failure(error))
+            return
         }
         
+        // Retrieve the download URL once upload completes successfully
         dataRef.downloadURL { url, urlError in
-        
+            
             if let urlError = urlError {
                 completion(.failure(urlError))
                 return
             }
             
             guard let url = url else {
-                print("URL is nil in uploadData.")
+                let unexpectedError = NSError(
+                    domain: "UploadData",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "URL is nil after successful upload."]
+                )
+                completion(.failure(unexpectedError))
                 return
             }
             
+            // Return the actual download URL string
             completion(.success(url.absoluteString))
         }
     }
+    
+    return uploadTask
 }
+

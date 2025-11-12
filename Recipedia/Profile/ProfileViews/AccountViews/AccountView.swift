@@ -21,11 +21,11 @@ struct AccountView: View {
     var body: some View {
         VStack(spacing: 20) {
             LinksMenu(items: [
-//                AnyView(Button(action: showChangeEmailView) {
-//                    Text("Change email")
-//                        .padding()
-//                        .frame(maxWidth: .infinity)
-//                }),
+                AnyView(Button(action: showChangeEmailView) {
+                    Text("Change email")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                }),
                 
                 AnyView(Button(action: showChangePasswordView) {
                     Text("Change password")

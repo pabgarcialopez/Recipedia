@@ -107,7 +107,7 @@ struct ProfileEditView: View {
             if let message = newValue { showAlert(title: "Success", message: message) }
         }
         .alert(alertTitle, isPresented: $isShowingAlert, actions: {
-            Button("OK", role: .cancel) { dismiss() }
+            Button("OK", role: .cancel) { }
         }, message: { Text(alertMessage) })
     }
     

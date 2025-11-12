@@ -83,8 +83,8 @@ final class ProfileViewModel: ObservableObject {
             let imageID = "\(user.id).jpg"
             let newURL = profileRepository.updateProfilePicture(image: profilePicture, imageID: imageID) { result in
                 switch result {
-                    case .success(let message):
-                        self.profileMessage = message
+                case .success(_):
+                        self.profileMessage = "New profile picture has been set"
                     case .failure(let error):
                         self.errorMessage = error.localizedDescription
                 }
@@ -99,8 +99,6 @@ final class ProfileViewModel: ObservableObject {
         authenticationViewModel.updateEmail(to: newEmail) { result in
             switch result {
                 case .success(let message):
-//                    self.user.email = newEmail // Save locally
-//                    self.updateUser(user: self.user)
                     self.authMessage = message
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
