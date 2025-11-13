@@ -26,8 +26,14 @@ struct SignUpView: View {
                 .padding(.vertical, 30)
                 
             VStack(spacing: 15) {
-                TextField("Enter your email", text: $email)
-                    .stroked(cornerRadius: 15)
+                TextField("Enter your email", text: Binding(
+                    get: { email },
+                    set: { email = $0.lowercased() }
+                ))
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled(true)
+                .stroked(cornerRadius: 15)
+                    
                 SecureField("Enter your password", text: $password)
                     .stroked(cornerRadius: 15)
             }

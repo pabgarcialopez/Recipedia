@@ -28,25 +28,37 @@ struct ChangePasswordView: View {
     }
     
     var body: some View {
-        VStack(spacing: 10) {
-            LabeledTextField(label: "Current password", prompt: "Enter your current password", text: $currentPassword, isSecure: true)
-            LabeledTextField(label: "New password", prompt: "Enter your new password", text: $newPassword, isSecure: true)
-            LabeledTextField(label: "New password repeated", prompt: "Enter your new password again", text: $newPasswordRepeated, isSecure: true)
-            Button(action: {
-                updatePassword(to: newPassword)
-            }, label: {
-                Text("Save")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(strokeColorSaveButton)
-                    )
-            })
-            .padding(.top, 50)
-            .disabled(disableSaveButton())
+            
+        VStack(alignment: .leading) {
+            Text("Change your password")
+                .font(.largeTitle)
+                .bold()
+                .padding(.top, 20)
+            
+            VStack(spacing: 12) {
+                LabeledTextField(label: "Current password", prompt: "Enter your current password", text: $currentPassword, isSecure: true)
+                LabeledTextField(label: "New password", prompt: "Enter your new password", text: $newPassword, isSecure: true)
+                LabeledTextField(label: "New password repeated", prompt: "Enter your new password again", text: $newPasswordRepeated, isSecure: true)
+                
+                Button(action: {
+                    updatePassword(to: newPassword)
+                }, label: {
+                    Text("Save")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 15)
+                                .stroke(strokeColorSaveButton)
+                        )
+                })
+                .padding(.top, 50)
+                .disabled(disableSaveButton())
+                
+                Spacer()
+            }
         }
-        .padding()
+        .padding(30)
+            
         .onChange(of: profileViewModel.errorMessage) { _, newValue in
             if let message = newValue {
                 showAlert(title: "Error", message: message)
@@ -55,7 +67,6 @@ struct ChangePasswordView: View {
         .alert(alertTitle, isPresented: $alertShowing, actions: {}, message: {
             Text(alertMessage)
         })
-        
     }
     
     func disableSaveButton() -> Bool {
@@ -71,7 +82,7 @@ struct ChangePasswordView: View {
     }
     
     func updatePassword(to newPassword: String) {
-        profileViewModel.updatePassword(to: newPassword, authenticationViewModel: profileViewModel.authenticationViewModel)
+        profileViewModel.updatePassword(to: newPassword)
     }
 }
 

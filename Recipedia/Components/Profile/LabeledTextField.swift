@@ -12,16 +12,22 @@ struct LabeledTextField: View {
     let prompt: String
     let axis: Axis?
     let isSecure: Bool
+    let disabled: Bool
+    let lowercased: Bool
     @Binding var text: String
     
-    init(label: String, prompt: String, text: Binding<String>, axis: Axis? = nil, isSecure: Bool = false) {
+    init(label: String, prompt: String, text: Binding<String>, axis: Axis? = nil, isSecure: Bool = false, disabled: Bool = false, lowercased: Bool = false) {
         self.label = label
         self.prompt = prompt
         self.axis = axis
         self.isSecure = isSecure
+        self.disabled = disabled
+        self.lowercased = lowercased
         self._text = Binding(
             get: { text.wrappedValue },
-            set: { text.wrappedValue = $0 }
+            set: { newValue in
+                text.wrappedValue = lowercased ? newValue.lowercased() : newValue
+            }
         )
     }
     
@@ -30,13 +36,17 @@ struct LabeledTextField: View {
             Text(label)
                 .foregroundStyle(.separator)
             
-            if isSecure {
-                SecureField(prompt, text: $text)
-            } else if let axis = axis {
-                TextField(prompt, text: $text, axis: axis)
-            } else {
-                TextField(prompt, text: $text)
+            Group {
+                if isSecure {
+                    SecureField(prompt, text: $text)
+                } else if let axis = axis {
+                    TextField(prompt, text: $text, axis: axis)
+                } else {
+                    TextField(prompt, text: $text)
+                }
             }
+            .disabled(disabled)
+            .autocapitalization(lowercased ? .none : .sentences)
         }
         .padding(.init(top: 10, leading: 15, bottom: 10, trailing: 15))
         .overlay(
@@ -47,6 +57,6 @@ struct LabeledTextField: View {
 }
 
 #Preview {
-    @Previewable @State var text = "Text"
-    LabeledTextField(label: "Label", prompt: "Prompt", text: $text, isSecure: true)
+    @Previewable @State var text = "Text".lowercased()
+    LabeledTextField(label: "Label", prompt: "Prompt", text: $text, isSecure: false, lowercased: true)
 }

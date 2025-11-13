@@ -22,42 +22,68 @@ struct ChangeEmailView: View {
     
     private var user: User { profileViewModel.user }
     
+    private var saveButton: some View {
+        Button(action: {
+            updateEmail()
+            showAlert(
+                title: "Next steps",
+                message: "Please go to your \(newEmail) mailbox and verify your new email. You will now be logged out.")
+        }) {
+            Text("Save")
+                .bold()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+        }
+        .foregroundStyle(.blue)
+        .overlay(RoundedRectangle(cornerRadius: 15).stroke(.blue))
+        .buttonStyle(.plain)
+    }
+    
     var body: some View {
-        Form {
-            Section {
-                Text(user.email)
-                TextField("New email", text: Binding(
-                    get: { newEmail },
-                    set: { newEmail = $0.lowercased() }
-                ))
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled(true)
-            }
-                        
-            Section {
-                if !indication.isEmpty {
-                    Text(indication)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                }
+        VStack(alignment: .leading) {
+            
+            Text("Change your email")
+                .font(.largeTitle)
+                .bold()
+                .padding(.top, 20)
+            
+            VStack(spacing: 12) {
+                LabeledTextField(
+                    label: "Current email",
+                    prompt: "Enter your current email",
+                    text: .constant(user.email),
+                    disabled: true
+                )
                 
-                Button("Save", action: {
-                    updateEmail()
-                    showAlert(
-                        title: "Next steps",
-                        message: "Please go to your \(newEmail) mailbox and verify your new email. You will now be logged out.")
-                })
-                    .disabled(disableSaveButton())
-                    .frame(maxWidth: .infinity, alignment: .center)
+                LabeledTextField(
+                    label: "New email",
+                    prompt: "Enter your new email",
+                    text: $newEmail,
+                    lowercased: true
+                )
             }
             
-            VStack(alignment: .leading, spacing: 0) {
-                Text("When saving your changes, you will be logged out from this app and asked to verify your new email.")
+            if !indication.isEmpty {
+                Text(indication)
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.red)
+                    .padding(.top, 20)
             }
-            .listRowBackground(Color.clear)
+            
+            saveButton
+                .padding(.top, 20)
+            
+            Text("When saving your changes, you will be logged out from this app and asked to verify your new email.")
+                .font(.caption)
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.top, 10)
+            
+            
+            Spacer()
+            
         }
+        .padding(30)
         .alert(alertTitle, isPresented: $alertShowing, actions: {
             Button("OK") {
                 profileViewModel.signOut()
@@ -70,9 +96,6 @@ struct ChangeEmailView: View {
             profileViewModel.authMessage = nil // Reset so future changes fire again
             
         }
-        .navigationTitle("Change your email")
-        .navigationBarTitleDisplayMode(.inline)
-        
     }
     
     func isValidEmail() -> Bool {
@@ -82,7 +105,7 @@ struct ChangeEmailView: View {
     
     func updateIndication() {
         
-        if newEmail == user.email {
+        if newEmail.lowercased() == user.email.lowercased() {
             indication = "Your new email cannot be the same as your current one"
         }
         
@@ -94,7 +117,9 @@ struct ChangeEmailView: View {
     }
     
     func disableSaveButton() -> Bool {
-        return newEmail.isEmpty || newEmail == user.email || !isValidEmail()
+        return newEmail.isEmpty ||
+        newEmail.lowercased() == user.email.lowercased() ||
+        !isValidEmail()
     }
     
     func showAlert(title: String, message: String = "") {

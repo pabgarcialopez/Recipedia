@@ -106,7 +106,7 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
-    func updatePassword(to newPassword: String, authenticationViewModel: AuthenticationViewModel) {
+    func updatePassword(to newPassword: String) {
         authenticationViewModel.updatePassword(to: newPassword) { result in
             switch result {
             case .success(let message):
