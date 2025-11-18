@@ -112,13 +112,30 @@ final class AuthenticationFirebaseDatasource {
         }
     }
     
-    func updatePassword(to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
-        guard let user = Auth.auth().currentUser else {
+    func updatePassword(from currentPassword: String, to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let user = Auth.auth().currentUser,
+              let email = user.email else {
             completion(.failure(URLError(.userAuthenticationRequired)))
             return
         }
-            
-        user.updatePassword(to: newPassword)
-        completion(.success("Password changed successfully"))
+
+        // First reauthenticate
+        let credential = EmailAuthProvider.credential(withEmail: email, password: currentPassword)
+
+        user.reauthenticate(with: credential) { _, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            // Now update password
+            user.updatePassword(to: newPassword) { error in
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    completion(.success("Password changed successfully"))
+                }
+            }
+        }
     }
 }

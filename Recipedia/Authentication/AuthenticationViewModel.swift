@@ -59,7 +59,7 @@ final class AuthenticationViewModel: ObservableObject {
         authenticationRepository.updateEmail(to: newEmail, completion: completion)
     }
     
-    func updatePassword(to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
-        authenticationRepository.updatePassword(to: newPassword, completion: completion)
+    func updatePassword(from currentPassword: String, to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
+        authenticationRepository.updatePassword(from: currentPassword, to: newPassword, completion: completion)
     }
 }

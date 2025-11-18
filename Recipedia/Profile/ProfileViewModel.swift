@@ -106,13 +106,13 @@ final class ProfileViewModel: ObservableObject {
         }
     }
     
-    func updatePassword(to newPassword: String) {
-        authenticationViewModel.updatePassword(to: newPassword) { result in
+    func updatePassword(from currentPassword: String, to newPassword: String) {
+        authenticationViewModel.updatePassword(from: currentPassword, to: newPassword) { result in
             switch result {
-            case .success(let message):
-                self.authMessage = message
-            case .failure(let error):
-                self.errorMessage = error.localizedDescription
+                case .success(let msg):
+                    self.authMessage = msg
+                case .failure(let error):
+                    self.errorMessage = error.localizedDescription
             }
         }
     }

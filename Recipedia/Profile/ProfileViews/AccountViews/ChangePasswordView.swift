@@ -41,7 +41,7 @@ struct ChangePasswordView: View {
                 LabeledTextField(label: "New password repeated", prompt: "Enter your new password again", text: $newPasswordRepeated, isSecure: true)
                 
                 Button(action: {
-                    updatePassword(to: newPassword)
+                    updatePassword(from: currentPassword, to: newPassword)
                 }, label: {
                     Text("Save")
                         .frame(maxWidth: .infinity)
@@ -58,13 +58,19 @@ struct ChangePasswordView: View {
             }
         }
         .padding(30)
-            
+        .onChange(of: profileViewModel.authMessage) { _, newValue in
+            if let message = newValue {
+                showAlert(title: "Success", message: message)
+            }
+        }
         .onChange(of: profileViewModel.errorMessage) { _, newValue in
             if let message = newValue {
                 showAlert(title: "Error", message: message)
             }
         }
-        .alert(alertTitle, isPresented: $alertShowing, actions: {}, message: {
+        .alert(alertTitle, isPresented: $alertShowing, actions: {
+            Button("OK", role: .cancel) { dismiss() }
+        }, message: {
             Text(alertMessage)
         })
     }
@@ -81,8 +87,8 @@ struct ChangePasswordView: View {
         alertMessage = message
     }
     
-    func updatePassword(to newPassword: String) {
-        profileViewModel.updatePassword(to: newPassword)
+    func updatePassword(from currentPassword: String, to newPassword: String) {
+        profileViewModel.updatePassword(from: currentPassword, to: newPassword)
     }
 }
 

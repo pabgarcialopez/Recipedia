@@ -34,7 +34,7 @@ final class AuthenticationRepository {
         authenticationFirebaseDatasource.updateEmail(to: newEmail, completion: completion)
     }
     
-    func updatePassword(to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
-        authenticationFirebaseDatasource.updatePassword(to: newPassword, completion: completion)
+    func updatePassword(from currentPassword: String, to newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
+        authenticationFirebaseDatasource.updatePassword(from: currentPassword, to: newPassword, completion: completion)
     }
 }
