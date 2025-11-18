@@ -54,6 +54,11 @@ struct ChangePasswordView: View {
                 .padding(.top, 50)
                 .disabled(disableSaveButton())
                 
+                if profileViewModel.isLoading {
+                    ProgressView()
+                        .padding(.top, 20)
+                }
+                
                 Spacer()
             }
         }

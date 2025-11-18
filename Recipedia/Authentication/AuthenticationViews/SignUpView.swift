@@ -55,6 +55,11 @@ struct SignUpView: View {
                     .background(.blue)
                     .clipShape(RoundedRectangle(cornerRadius: 15))
             }
+            
+            if authenticationViewModel.isLoading {
+                ProgressView()
+                    .padding(.top, 20)
+            }
         }
         .padding(50)
         .onAppear {

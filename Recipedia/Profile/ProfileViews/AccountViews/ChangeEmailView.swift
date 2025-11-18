@@ -79,6 +79,10 @@ struct ChangeEmailView: View {
                 .multilineTextAlignment(.center)
                 .padding(.top, 10)
             
+            if profileViewModel.isLoading {
+                ProgressView()
+                    .padding(.top, 20)
+            }
             
             Spacer()
             

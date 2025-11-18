@@ -18,6 +18,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var authMessage: String? = nil
     @Published var profileMessage: String? = nil
     @Published var errorMessage: String? = nil
+    @Published var isLoading = false
     
     private let profileRepository: ProfileRepository
     let authenticationViewModel: AuthenticationViewModel
@@ -96,7 +97,9 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func updateEmail(to newEmail: String) {
+        isLoading = true
         authenticationViewModel.updateEmail(to: newEmail) { result in
+            self.isLoading = false
             switch result {
                 case .success(let message):
                     self.authMessage = message
@@ -107,7 +110,9 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func updatePassword(from currentPassword: String, to newPassword: String) {
+        isLoading = true
         authenticationViewModel.updatePassword(from: currentPassword, to: newPassword) { result in
+            self.isLoading = false
             switch result {
                 case .success(let msg):
                     self.authMessage = msg

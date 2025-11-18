@@ -10,11 +10,13 @@ import Foundation
 final class AuthenticationViewModel: ObservableObject {
     @Published var user: User?
     @Published var errorMessage: String?
+    @Published var isLoading: Bool
     
     private let authenticationRepository: AuthenticationRepository
     
     init(authenticationRepository: AuthenticationRepository = AuthenticationRepository()) {
         self.authenticationRepository = authenticationRepository
+        self.isLoading = false
         getCurrentUser()
     }
     
@@ -25,18 +27,22 @@ final class AuthenticationViewModel: ObservableObject {
     }
     
     func createNewUser(email: String, password: String) {
+        isLoading = true
         authenticationRepository.createNewUser(email: email, password: password) { [weak self] result in
+            self?.isLoading = false
             switch result {
-            case .success(let user):
-                self?.user = user
-            case .failure(let error):
-                self?.errorMessage = error.localizedDescription
+                case .success(let user):
+                    self?.user = user
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
             }
         }
     }
     
     func signIn(email: String, password: String) {
+        isLoading = true
         authenticationRepository.signIn(email: email, password: password) { [weak self] result in
+            self?.isLoading = false
             switch result {
             case .success(let user):
                 self?.user = user
