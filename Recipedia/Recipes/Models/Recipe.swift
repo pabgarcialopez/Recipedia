@@ -40,7 +40,7 @@ enum Difficulty: String, Codable, CaseIterable, Hashable {
     }
 }
 
-class Recipe {
+class Recipe: Codable {
     private(set) var id: UUID
     var name: String
     var description: String

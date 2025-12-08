@@ -12,7 +12,7 @@ import PhotosUI
 import FirebaseStorage
 
 final class ProfileViewModel: ObservableObject {
-
+    
     @Published var user: User
     @Published var profilePicture: UIImage = UIImage(resource: .defaultProfilePicture)
     @Published var authMessage: String? = nil
@@ -21,13 +21,23 @@ final class ProfileViewModel: ObservableObject {
     @Published var isLoading = false
     
     private let profileRepository: ProfileRepository
-    let authenticationViewModel: AuthenticationViewModel
+    private let authenticationViewModel: AuthenticationViewModel
+    private let imageLoader: ImageLoader
     
     init(profileRepository: ProfileRepository = ProfileRepository(), authenticationViewModel: AuthenticationViewModel) {
         
         self.user = .empty
         self.profileRepository = profileRepository
         self.authenticationViewModel = authenticationViewModel
+        self.imageLoader = ImageLoader()
+        
+        // Observe ImageLoader's published image
+        // If these lines are not included, then the profilePicture
+        // will always be the default placeholder, since this ProfileViewModel
+        // class is not observing the async change made on the imageLoader's image.
+        imageLoader.$image
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$profilePicture)
         
         // Try to fetch profile picture from database
         fetchUser()
@@ -51,9 +61,8 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func fetchProfilePicture() {
-        profileRepository.fetchProfilePicture(for: self.user) { [weak self] image in
-            self?.profilePicture = image
-        }
+        self.imageLoader.loadImage(from: "\(PROFILE_PICTURES_PATH)/\(user.pictureURL)")
+        self.profilePicture = imageLoader.image
     }
     
     func deleteProfilePicture() {

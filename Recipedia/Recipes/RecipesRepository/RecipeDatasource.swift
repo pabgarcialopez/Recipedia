@@ -7,6 +7,10 @@
 
 final class RecipeDatasource {
     
+    func fetchRecipes(completion: @escaping (Result<[Recipe], any Error>) -> Void) {
+        Database.fetchRecipes(completion: completion)
+    }
+    
     func createRecipe(recipe: Recipe) {
         
     }

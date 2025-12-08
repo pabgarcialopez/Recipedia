@@ -13,6 +13,10 @@ final class RecipeRepository {
         self.recipeDatasource = recipeDatasource
     }
     
+    func fetchRecipes(completion: @escaping (Result<[Recipe], any Error>) -> Void) {
+        recipeDatasource.fetchRecipes(completion: completion)
+    }
+    
     func createRecipe(recipe: Recipe) {
         recipeDatasource.createRecipe(recipe: recipe)
     }

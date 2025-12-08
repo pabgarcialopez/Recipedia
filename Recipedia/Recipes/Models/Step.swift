@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Step {
+class Step: Codable {
     private(set) var id: UUID
     var title: String
     var instruction: String

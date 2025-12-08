@@ -27,7 +27,7 @@ final class ProfileRepository {
         profileDatasource.deleteProfilePicture(path: path, completion: completion)
     }
     
-    func fetchProfilePicture(for user: User, completion: @escaping (UIImage) -> Void) {
-        profileDatasource.fetchProfilePicture(for: user, completion: completion)
-    }
+//    func fetchProfilePicture(for user: User, completion: @escaping (UIImage) -> Void) {
+//        profileDatasource.fetchProfilePicture(for: user, completion: completion)
+//    }
 }

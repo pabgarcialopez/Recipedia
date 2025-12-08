@@ -46,6 +46,10 @@ let TERMS_AND_CONDITIONS = "Terms and conditions"
 
 // MARK: - Firestore collections
 let USERS_COLLECTION = "users"
+let RECIPES_COLLECTION = "recipes"
+
+// MARK: - Firestore Storage paths
+let PROFILE_PICTURES_PATH = "images/profilePictures"
 
 
 

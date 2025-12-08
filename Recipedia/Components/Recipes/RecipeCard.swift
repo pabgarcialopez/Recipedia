@@ -18,6 +18,7 @@ struct RecipeCard: View {
         HStack(alignment: .top, spacing: 10) {
             
             // Picture
+//            RemoteImageView(path: String)
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color.gray.opacity(0.3)) // Placeholder background
                 .frame(width: 130, height: 100)

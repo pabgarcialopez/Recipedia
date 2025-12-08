@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Unit: String, CaseIterable {
+enum Unit: String, CaseIterable, Codable {
     
     // --- Mass (Weight) ---
     case grams = "g"
@@ -41,7 +41,7 @@ enum Unit: String, CaseIterable {
     case slice = "slice(s)"
 }
 
-class Ingredient {
+class Ingredient: Codable {
     private(set) var id: UUID
     var name: String?
     var quantity: Double?

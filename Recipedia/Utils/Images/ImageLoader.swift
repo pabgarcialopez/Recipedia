@@ -12,19 +12,18 @@ import SwiftUI
 typealias ImageCache = NSCache<NSString, UIImage>
 
 class ImageLoader: ObservableObject {
-    @Published var image: Image?
-    
+    @Published var image: UIImage = UIImage(resource: .defaultPicturePlaceholder)
+
     private static var cache = NSCache<NSString, UIImage>()
     
     func loadImage(from path: String) {
         // Check cache first
         if let cachedImage = ImageLoader.cache.object(forKey: path as NSString) {
-            self.image = Image(uiImage: cachedImage)
+            self.image = cachedImage
             print("Image loaded from cache for: \(path)")
             return
         }
-        
-        // Download via getData
+
         getData(path: path) { result in
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
@@ -33,11 +32,12 @@ class ImageLoader: ObservableObject {
                 case .success(let data):
                     if let data = data, let uiImage = UIImage(data: data) {
                         ImageLoader.cache.setObject(uiImage, forKey: path as NSString)
-                        self.image = Image(uiImage: uiImage)
+                        self.image = uiImage
                         print("Image downloaded and cached for: \(path)")
                     }
                 case .failure(let error):
-                    print("Failed to load image for \(path): \(error)")
+                    self.image = UIImage(resource: .defaultPicturePlaceholder)
+                    print("Failed to load image for \(path): \(error). Using default image placeholder.")
                 }
             }
         }

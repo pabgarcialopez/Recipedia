@@ -8,7 +8,6 @@
 import Foundation
 import FirebaseFirestore
 
-// Conform
 struct User: Codable, Equatable {
     let id: String
     var email: String

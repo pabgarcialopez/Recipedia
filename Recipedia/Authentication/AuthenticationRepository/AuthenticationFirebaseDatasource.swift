@@ -80,7 +80,7 @@ final class AuthenticationFirebaseDatasource {
                     // its email in the database (authUser != databaseUser)
                     if signedInUser.email != email {
                         signedInUser.email = email
-                        updateUser(user: signedInUser)
+                        Database.updateUser(user: signedInUser)
                     }
                     
                     completion(.success(signedInUser))
