@@ -10,12 +10,14 @@ import SwiftUI
 struct RootView: View {
         
     @StateObject var profileViewModel: ProfileViewModel
+    @StateObject private var globalImageLoader: ImageLoader
     @ObservedObject var authenticationViewModel: AuthenticationViewModel
     
     @State private var selectedTab = 0
     
     init(authenticationViewModel: AuthenticationViewModel) {
         self.authenticationViewModel = authenticationViewModel
+        self._globalImageLoader = StateObject(wrappedValue: ImageLoader())
         // Inject authenticationViewModel into profileViewModel
         self._profileViewModel = StateObject(wrappedValue: ProfileViewModel(authenticationViewModel: authenticationViewModel))
     }
@@ -27,11 +29,12 @@ struct RootView: View {
                 .tabItem { Label("Home", systemImage: "house") }
                 .tag(0)
             
+            // TODO: use RemoteImageView for ProfileView
             ProfileView(profileViewModel: profileViewModel)
                 .tabItem { Label("Profile", systemImage: "person.crop.circle") }
                 .tag(1)
         }
-        .environment(\.selectedTab, $selectedTab)
+        .environment(\.imageLoader, globalImageLoader)
         
     }
 }

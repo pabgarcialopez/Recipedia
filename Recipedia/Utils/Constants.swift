@@ -10,12 +10,10 @@ import Foundation
 // MARK: - App meta data
 let APP_NAME = "Recipedia"
 
+// MARK: - Storage settings
+let MAX_SIZE: Int64 = 10 * 1024 * 1024 // 10 MB
+
 // MARK: - Recipe defaults
-let DEFAULT_RECIPE_NAME = ""
-let DEFAULT_RECIPE_DETAILS = ""
-let DEFAULT_RECIPE_TIME: Int = 25
-//let DEFAULT_RECIPE_COST = Cost.cheap
-//let DEFAULT_RECIPE_DIFFICULTY = Difficulty.easy
 let DEFAULT_RECIPE_NUM_PEOPLE = 4
 let DEFAULT_RECIPE_NUM_PEOPLE_RANGE = 1...16
 let DEFAULT_RECIPE_COVER = "defaultRecipeCover"

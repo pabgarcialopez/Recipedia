@@ -9,18 +9,6 @@ import Foundation
 import SwiftUI
 import UIKit
 
-// --------- Allow easy programatic navigation between tabs ---------
-struct SelectedTabKey: EnvironmentKey {
-    static let defaultValue: Binding<Int>? = nil
-}
-
-extension EnvironmentValues {
-    var selectedTab: Binding<Int>? {
-        get { self[SelectedTabKey.self] }
-        set { self[SelectedTabKey.self] = newValue }
-    }
-}
-
 // --------- Allow general use of the authentication functions ------
 
 struct AuthKey: EnvironmentKey {
@@ -33,6 +21,20 @@ extension EnvironmentValues {
         set { self[AuthKey.self] = newValue }
     }
 }
+
+// --------- Allow general use of the remote image loading ------
+
+private struct ImageLoaderKey: EnvironmentKey {
+    static let defaultValue = ImageLoader()
+}
+
+extension EnvironmentValues {
+    var imageLoader: ImageLoader {
+        get { self[ImageLoaderKey.self] }
+        set { self[ImageLoaderKey.self] = newValue }
+    }
+}
+
 
 
 // --------- Hide keyboard functionality ----------------------------

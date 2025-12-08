@@ -9,8 +9,14 @@ import SwiftUI
 
 struct RecipeListView: View {
     
+    private let recipeViewModel: RecipeViewModel
+    
+    init(recipeViewModel: RecipeViewModel = RecipeViewModel()) {
+        self.recipeViewModel = recipeViewModel
+    }
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("Hello")
     }
 }
 

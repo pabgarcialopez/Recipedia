@@ -14,23 +14,28 @@ final class ProfileDatasource {
     let storageRef = Storage.storage().reference()
     let db = Firestore.firestore()
     
-    // TODO: This could be done in Storage with a general get data from function
     func fetchProfilePicture(for user: User, completion: @escaping (UIImage) -> Void) {
         guard !user.pictureURL.isEmpty else {
             completion(UIImage(resource: .defaultProfilePicture))
             return
         }
         
-        let imageRef = storageRef.child("images/profilePictures/\(user.pictureURL)")
-
-        imageRef.getData(maxSize: 5 * 1024 * 1024) { data, error in
-            if let data = data, let uiImage = UIImage(data: data) {
-                completion(uiImage)
-            } else {
+        let path = "images/profilePictures/\(user.pictureURL)"
+        
+        getData(path: path) { result in
+            switch result {
+            case .success(let data):
+                if let data = data, let uiImage = UIImage(data: data) {
+                    completion(uiImage)
+                } else {
+                    completion(UIImage(resource: .defaultProfilePicture))
+                }
+            case .failure(_):
                 completion(UIImage(resource: .defaultProfilePicture))
             }
         }
     }
+
     
     func updateProfilePicture(image: UIImage, imageID: String, completion: @escaping (Result<String, Error>) -> Void) -> String {
         // Upload image to database

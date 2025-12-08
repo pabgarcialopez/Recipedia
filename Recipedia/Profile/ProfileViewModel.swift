@@ -84,10 +84,11 @@ final class ProfileViewModel: ObservableObject {
             let imageID = "\(user.id).jpg"
             let newURL = profileRepository.updateProfilePicture(image: profilePicture, imageID: imageID) { result in
                 switch result {
-                case .success(_):
-                        self.profileMessage = "New profile picture has been set"
-                    case .failure(let error):
-                        self.errorMessage = error.localizedDescription
+                    // TODO: don't mix these messages with the updateUser messages.
+                    case .success(_): ()
+//                        self.profileMessage = "New profile picture has been set"
+                    case .failure(_): ()
+//                        self.errorMessage = error.localizedDescription
                 }
             }
             

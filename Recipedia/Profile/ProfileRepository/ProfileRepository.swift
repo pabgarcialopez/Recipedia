@@ -20,7 +20,7 @@ final class ProfileRepository {
     }
     
     func updateProfilePicture(image: UIImage, imageID: String, completion: @escaping (Result<String, Error>) -> Void) -> String {
-        profileDatasource.updateProfilePicture(image: image, imageID: imageID, completion: completion)
+        return profileDatasource.updateProfilePicture(image: image, imageID: imageID, completion: completion)
     }
     
     func deleteProfilePicture(path: String, completion: @escaping (Error?) -> Void) {

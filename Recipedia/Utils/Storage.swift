@@ -10,13 +10,14 @@ import FirebaseStorage
 
 let storageRef = Storage.storage().reference()
 
-func deleteData(path: String, completion: @escaping ((any Error)?) -> Void) {
-    let deletionRef = storageRef.child(path)
-    Task { @MainActor in // To make deletion in main thread. Necessary.
-        do {
-            try await deletionRef.delete()
-        } catch {
-            completion(error)
+func getData(path: String, completion: @escaping (Result<Data?, any Error>) -> Void) {
+    let getterRef = storageRef.child(path)
+    
+    getterRef.getData(maxSize: MAX_SIZE) { data, error in
+        if let error = error {
+            completion(.failure(error))
+        } else {
+            completion(.success(data))
         }
     }
 }
@@ -25,7 +26,7 @@ func uploadData(
     _ data: Data,
     to path: String,
     metadata: StorageMetadata? = nil,
-    completion: @escaping (Result<String, Error>) -> Void
+    completion: @escaping (Result<String, any Error>) -> Void
 ) -> StorageUploadTask {
     
     let dataRef = storageRef.child(path)
@@ -62,5 +63,19 @@ func uploadData(
     }
     
     return uploadTask
+}
+
+
+
+func deleteData(path: String, completion: @escaping ((any Error)?) -> Void) {
+    let deletionRef = storageRef.child(path)
+    Task { @MainActor in // To make deletion in main thread. Necessary.
+        do {
+            try await deletionRef.delete()
+            completion(nil)
+        } catch {
+            completion(error)
+        }
+    }
 }
 
