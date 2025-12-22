@@ -29,10 +29,14 @@ struct RootView: View {
                 .tabItem { Label("Home", systemImage: "house") }
                 .tag(0)
             
+            RecipeCreationView()
+                .tabItem { Label("Create", systemImage: "plus") }
+                .tag(1)
+            
             // TODO: use RemoteImageView for ProfileView
             ProfileView(profileViewModel: profileViewModel)
                 .tabItem { Label("Profile", systemImage: "person.crop.circle") }
-                .tag(1)
+                .tag(2)
         }
         .environment(\.imageLoader, globalImageLoader)
         

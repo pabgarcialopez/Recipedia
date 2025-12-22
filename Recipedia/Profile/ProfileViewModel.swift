@@ -35,6 +35,10 @@ final class ProfileViewModel: ObservableObject {
         // If these lines are not included, then the profilePicture
         // will always be the default placeholder, since this ProfileViewModel
         // class is not observing the async change made on the imageLoader's image.
+        // Code explanation: imageLoader.$image is a Publisher that emits a new value every time imageLoader.image changes.
+        // UI updates must happen on the main thread in SwiftUI and receive(on: DispatchQueue.main)
+        // ensures that the values emitted by the publisher are handled on the main thread.
+        // Finally, .assign connects the publisher to your @Published var profilePicture in the VM
         imageLoader.$image
             .receive(on: DispatchQueue.main)
             .assign(to: &$profilePicture)

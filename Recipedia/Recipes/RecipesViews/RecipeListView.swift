@@ -16,24 +16,29 @@ struct RecipeListView: View {
     }
     
     var body: some View {
-        if recipeViewModel.recipes.isEmpty {
-            ContentUnavailableView("No recipes yet", systemImage: "carrot", description: Text("Add some now!"))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-            ScrollView {
-                VStack(alignment: .center, spacing: 30) { // Needed since ScrollView only provides the scrollable area, not the children arrangement.
-                    ForEach(recipeViewModel.recipes, id: \.id) { recipe in
-                        NavigationLink {
-                            RecipeDetailView(recipe: recipe)
-                        } label: {
-                            RecipeCard(recipe: recipe)
+        NavigationStack {
+            Group {
+                if recipeViewModel.recipes.isEmpty {
+                    ContentUnavailableView("No recipes yet", systemImage: "carrot", description: Text("Add some now!"))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        VStack(alignment: .center, spacing: 30) { // Needed since ScrollView only provides the scrollable area, not the children arrangement.
+                            ForEach(recipeViewModel.recipes, id: \.id) { recipe in
+                                NavigationLink {
+                                    RecipeDetailView(recipe: recipe)
+                                } label: {
+                                    RecipeCard(recipe: recipe)
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
-                        .buttonStyle(.plain)
+                        .padding(.top, 15)
+                        .padding(.bottom, 25)
                     }
                 }
-                .padding(.top, 15)
-                .padding(.bottom, 25)
             }
+            .navigationTitle("My recipes")
         }
     }
 }
