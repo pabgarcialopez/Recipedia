@@ -42,13 +42,13 @@ enum Unit: String, CaseIterable, Codable {
 }
 
 class Ingredient: Codable {
-    private(set) var id: UUID
+    private(set) var ingredientId: UUID
     var name: String?
     var quantity: Double?
     var unit: Unit?
     
-    init(id: UUID = UUID(), name: String? = nil, quantity: Double? = nil, unit: Unit? = nil) {
-        self.id = id
+    init(ingredientId: UUID = UUID(), name: String? = nil, quantity: Double? = nil, unit: Unit? = nil) {
+        self.ingredientId = ingredientId
         self.name = name
         self.quantity = quantity
         self.unit = unit

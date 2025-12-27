@@ -37,25 +37,29 @@ struct CreationCard<Destination: View>: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10)
                             .fill(Color(.systemGray6))
-                            .frame(width: 36, height: 36)
+                            .frame(width: 38, height: 38)
                         Image(systemName: systemImage)
+                            .scaledToFit()
                             .foregroundStyle(.primary)
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
                             .font(.headline)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(.black)
                         Text(description)
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.gray)
                     }
+                    
+
+                    
                 }
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading) // <- make the card stretch
                 .background(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 15))
-                .shadow(color: shadowColor.opacity(0.12), radius: 8, x: 0, y: 4)
+                .shadow(color: shadowColor.opacity(0.2), radius: 8, x: 0, y: 4)
                 .contentShape(RoundedRectangle(cornerRadius: 15))
             }
         }

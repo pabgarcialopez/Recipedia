@@ -9,22 +9,28 @@ import SwiftUI
 
 struct RecipeListView: View {
     
-    private let recipeViewModel: RecipeViewModel
+    @ObservedObject var recipeViewModel: RecipeViewModel
     
-    init(recipeViewModel: RecipeViewModel = RecipeViewModel()) {
+    init(recipeViewModel: RecipeViewModel) {
         self.recipeViewModel = recipeViewModel
     }
     
     var body: some View {
         NavigationStack {
             Group {
-                if recipeViewModel.recipes.isEmpty {
+                if recipeViewModel.isLoading {
+                    ProgressView()
+                } else if recipeViewModel.errorMessage != nil {
+                    ContentUnavailableView("Your recipes could not be loaded", systemImage: "exclamationmark.triangle", description: Text("Please, try again later or contact support."))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                else if recipeViewModel.recipes.isEmpty {
                     ContentUnavailableView("No recipes yet", systemImage: "carrot", description: Text("Add some now!"))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
-                        VStack(alignment: .center, spacing: 30) { // Needed since ScrollView only provides the scrollable area, not the children arrangement.
-                            ForEach(recipeViewModel.recipes, id: \.id) { recipe in
+                        VStack(alignment: .center, spacing: 15) { // Needed since ScrollView only provides the scrollable area, not the children arrangement.
+                            ForEach(recipeViewModel.recipes, id: \.recipeId) { recipe in
                                 NavigationLink {
                                     RecipeDetailView(recipe: recipe)
                                 } label: {
@@ -44,5 +50,5 @@ struct RecipeListView: View {
 }
 
 #Preview {
-    RecipeListView()
+    RecipeListView(recipeViewModel: RecipeViewModel())
 }

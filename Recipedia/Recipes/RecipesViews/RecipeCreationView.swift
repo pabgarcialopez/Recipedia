@@ -9,29 +9,30 @@ import SwiftUI
 
 struct RecipeCreationView: View {
     
+    @ObservedObject var recipeViewModel: RecipeViewModel
     
     var body: some View {
-        VStack {
-            CreationCard(
-                title: "Manually add a recipe",
-                description: "Enter the recipe's details manually",
-                systemImage: "hammer"
-            ) {
+        NavigationStack {
+            VStack(spacing: 18) {
+                CreationCard(
+                    title: "Manually add a recipe",
+                    description: "Enter the recipe's details manually.",
+                    systemImage: "hammer"
+                ) { RecipeEditView(recipeViewModel: recipeViewModel) }
                 
+                CreationCard(
+                    title: "AI Assist",
+                    description: "Let AI create a new recipe for you.",
+                    systemImage: "sparkles",
+                ) {
+                    // TODO: create view for AI
+                }
             }
-            
-            CreationCard(
-                title: "AI Assist",
-                description: "We’ll suggest steps and ingredients.",
-                systemImage: "sparkles",
-                shadowColor: .black
-            ) {
-                
-            }
+            .padding(.init(top: 0, leading: 30, bottom: 0, trailing: 30))
         }
     }
 }
 
 #Preview {
-    RecipeCreationView()
+    RecipeCreationView(recipeViewModel: RecipeViewModel())
 }

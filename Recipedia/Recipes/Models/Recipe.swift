@@ -40,31 +40,31 @@ enum Difficulty: String, Codable, CaseIterable, Hashable {
     }
 }
 
-class Recipe: Codable {
-    private(set) var id: UUID
+struct Recipe: Codable {
+    private(set) var recipeId: UUID
     var name: String
     var description: String
-    var cost: Cost?
+    var cost: Cost
     var time: Int // minutes
     var difficulty: Difficulty?
     var numPeople: Int
-    var ingredients: [Ingredient]?
-    var steps: [Step]?
+    var ingredients: [Ingredient]
+    var steps: [Step]
     var imageId: String?
     
     init(
-        id: UUID = UUID(),
+        recipeId: UUID = UUID(),
         name: String = "",
         description: String = "",
-        cost: Cost? = nil,
+        cost: Cost = .cheap,
         time: Int = 25,
         difficulty: Difficulty? = nil,
         numPeople: Int = 4,
-        steps: [Step]? = nil,
-        ingredients: [Ingredient]? = nil,
+        steps: [Step] = [],
+        ingredients: [Ingredient] = [],
         imageId: String? = nil
     ) {
-        self.id = id
+        self.recipeId = recipeId
         self.name = name
         self.description = description
         self.time = time
@@ -75,7 +75,7 @@ class Recipe: Codable {
         self.ingredients = ingredients
         
         // ImageId is by default the image from the recipe
-        if imageId == nil { self.imageId = "\(self.id)" }
+        if imageId == nil { self.imageId = "\(self.recipeId)" }
         else { self.imageId = imageId }
     }
 }

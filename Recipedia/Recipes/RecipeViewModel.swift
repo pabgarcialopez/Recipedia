@@ -7,12 +7,14 @@
 
 import Foundation
 
+@MainActor // To make all properties and methods run on main thread (good for UI udpdates)
 final class RecipeViewModel: ObservableObject {
     
     private let recipeRepository: RecipeRepository
     
     @Published var recipes: [Recipe]
     @Published var errorMessage: String? = nil
+    @Published var isLoading: Bool = false
     
     init(recipeRepository: RecipeRepository = RecipeRepository()) {
         self.recipeRepository = recipeRepository
@@ -22,14 +24,16 @@ final class RecipeViewModel: ObservableObject {
     }
     
     private func fetchRecipes() {
-        self.recipeRepository.fetchRecipes { result in
+        self.isLoading = true
+        recipeRepository.fetchRecipes { result in
             switch result {
-                case .success(let recipes):
-                    self.recipes = recipes
-                case .failure(let error):
-                    self.errorMessage = error.localizedDescription
+            case .success(let recipes):
+                print("I got here and recipes are \(recipes)")
+                self.recipes = recipes
+            case .failure(let error):
+                self.errorMessage = error.localizedDescription
             }
-            
+            self.isLoading = false
         }
     }
     
@@ -43,5 +47,9 @@ final class RecipeViewModel: ObservableObject {
     
     func deleteRecipe(recipe: Recipe) {
         self.recipeRepository.deleteRecipe(recipe: recipe)
+    }
+    
+    func setRecipeImageData(from data: Data) {
+
     }
 }

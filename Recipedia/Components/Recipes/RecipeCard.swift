@@ -57,7 +57,7 @@ struct RecipeCard: View {
         .padding(10) // Small padding inside the card borders
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 15))
-        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 2)
         .padding(.horizontal) // To separate card from screen edges
     }
 }

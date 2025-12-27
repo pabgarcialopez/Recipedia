@@ -8,12 +8,12 @@
 import Foundation
 
 class Step: Codable {
-    private(set) var id: UUID
+    private(set) var stepId: UUID
     var title: String
     var instruction: String
     
-    init(id: UUID = UUID(), title: String, instruction: String) {
-        self.id = id
+    init(stepId: UUID = UUID(), title: String, instruction: String) {
+        self.stepId = stepId
         self.title = title
         self.instruction = instruction
     }
