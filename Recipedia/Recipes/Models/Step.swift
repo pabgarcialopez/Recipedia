@@ -7,13 +7,13 @@
 
 import Foundation
 
-class Step: Codable {
-    private(set) var stepId: UUID
+class Step: Identifiable, Codable {
+    private(set) var id: UUID
     var title: String
     var instruction: String
     
-    init(stepId: UUID = UUID(), title: String, instruction: String) {
-        self.stepId = stepId
+    init(id: UUID = UUID(), title: String = "", instruction: String = "") {
+        self.id = id
         self.title = title
         self.instruction = instruction
     }

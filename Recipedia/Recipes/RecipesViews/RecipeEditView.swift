@@ -44,7 +44,7 @@ struct RecipeEditView: View {
                     
                     photosPicker
                     
-                    
+                    // Basic info
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Basic info")
                             .font(.system(size: 18))
@@ -66,6 +66,7 @@ struct RecipeEditView: View {
                         }
                     }
                     
+                    // Ingredients
                     VStack(alignment: .leading) {
                         Text("Ingredients")
                             .font(.system(size: 18))
@@ -75,11 +76,8 @@ struct RecipeEditView: View {
                             ForEach($recipe.ingredients) { $ingredient in
                                 IngredientEditCard(ingredient: $ingredient)
                                     .contextMenu {
-                                        Button(role: .destructive) {
-                                            deleteIngredient(ingredient)
-                                        } label: {
-                                            Label("Delete ingredient", systemImage: "trash")
-                                        }
+                                        Button(role: .destructive) { deleteIngredient(ingredient)
+                                        } label: { Label("Delete ingredient", systemImage: "trash") }
                                     }
                                 Divider()
                             }
@@ -105,9 +103,59 @@ struct RecipeEditView: View {
                                 .stroke(Color(.separator))
                         )
                     }
+                    
+                    // Steps
+                    VStack(alignment: .leading) {
+                        Text("Steps")
+                            .font(.system(size: 18))
+                            .bold()
+                        
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(recipe.steps.indices, id: \.self) { idx in
+                                StepEditCard(order: idx + 1, step: $recipe.steps[idx])
+                                    .contextMenu {
+                                        Button(role: .destructive) { deleteStep(recipe.steps[idx])
+                                        } label: { Label("Delete step", systemImage: "trash") }
+                                    }
+                                Divider()
+                            }
+                            
+                            Button(action: addStep) {
+                                HStack(spacing: 13) {
+                                    Image(systemName: "plus")
+                                        .clipShape(Circle())
+                                    Text("Add step")
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
+                            
+                            
+                        }
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(.systemGray6))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(.separator))
+                        )
+                    }
+                    
+                    
+                    
+                    // Save button
                 }
             }
             .padding(28)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        hideKeyboard()
+                    }
+                }
+            }
         }
     }
     
@@ -174,9 +222,19 @@ struct RecipeEditView: View {
         recipe.ingredients.append(Ingredient())
     }
     
+    private func addStep() {
+        recipe.steps.append(Step())
+    }
+    
     private func deleteIngredient(_ ingredient: Ingredient) {
         if let index = recipe.ingredients.firstIndex(where: {$0.id == ingredient.id} ) {
             recipe.ingredients.remove(at: index)
+        }
+    }
+    
+    private func deleteStep(_ step: Step) {
+        if let index = recipe.steps.firstIndex(where: {$0.id == step.id} ) {
+            recipe.steps.remove(at: index)
         }
     }
     
@@ -185,3 +243,4 @@ struct RecipeEditView: View {
 #Preview {
     RecipeEditView(recipeViewModel: RecipeViewModel())
 }
+

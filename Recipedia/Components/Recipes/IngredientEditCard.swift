@@ -24,14 +24,6 @@ struct IngredientEditCard: View {
             HStack(spacing: 0) {
                 TextField("", value: $ingredient.quantity, format: .number)
                     .keyboardType(.numberPad)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            Button("Done") {
-                                hideKeyboard()
-                            }
-                        }
-                    }
                     .multilineTextAlignment(.trailing)
 
                 Picker("", selection: $ingredient.unit) {
