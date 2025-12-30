@@ -59,7 +59,7 @@ struct ChangeEmailView: View {
                     label: "New email",
                     prompt: "Enter your new email",
                     text: $newEmail,
-                    lowercased: true
+                    lowercase: true
                 )
             }
             

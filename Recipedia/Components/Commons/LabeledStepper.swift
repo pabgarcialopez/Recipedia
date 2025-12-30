@@ -19,7 +19,7 @@ struct LabeledStepper: View {
     }
     
     var body: some View {
-        VStack(alignment: .center, spacing: 5) {
+        VStack(alignment: .leading, spacing: 5) {
             Text(label)
                 .foregroundStyle(.secondary)
             
@@ -31,9 +31,10 @@ struct LabeledStepper: View {
                         .frame(width: 30, height: 30)
                         .contentShape(Rectangle())
                 }
+                .disabled(value == range.lowerBound)
 
                 Text("\(value)")
-                    .frame(minWidth: 40)
+                    .frame(minWidth: 20)
 
                 Button {
                     value = min(range.upperBound, value + 1)
@@ -42,8 +43,9 @@ struct LabeledStepper: View {
                         .frame(width: 30, height: 30)
                         .contentShape(Rectangle())
                 }
+                .disabled(value == range.upperBound)
             }
-            .padding(.init(top: 5, leading: 10, bottom: 5, trailing: 10))
+            .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
             .overlay(
                 RoundedRectangle(cornerRadius: 15)
                     .stroke(.separator, lineWidth: 1)

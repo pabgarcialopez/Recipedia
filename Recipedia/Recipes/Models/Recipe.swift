@@ -45,8 +45,8 @@ struct Recipe: Codable {
     var name: String
     var description: String
     var cost: Cost
-    var time: Int // minutes
-    var difficulty: Difficulty?
+    var time: String // minutes
+    var difficulty: Difficulty
     var numPeople: Int
     var ingredients: [Ingredient]
     var steps: [Step]
@@ -57,8 +57,8 @@ struct Recipe: Codable {
         name: String = "",
         description: String = "",
         cost: Cost = .cheap,
-        time: Int = 25,
-        difficulty: Difficulty? = nil,
+        time: String = "",
+        difficulty: Difficulty = .easy,
         numPeople: Int = 4,
         steps: [Step] = [],
         ingredients: [Ingredient] = [],

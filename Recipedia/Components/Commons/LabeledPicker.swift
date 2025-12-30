@@ -17,6 +17,7 @@ struct LabeledPicker<Value: Hashable, Content: View>: View {
         self.label = label
         self._selection = selection
         self.content = content
+        
     }
     
     var body: some View {

@@ -42,13 +42,8 @@ struct RecipeCard: View {
                     Image(systemName: "chart.bar.fill")
                         .foregroundStyle(.secondary)
                     
-                    if let difficulty = recipe.difficulty {
-                        Text(difficulty.description)
-                            .foregroundColor(difficulty.color)
-                    } else {
-                        Text("Unknown difficulty")
-                            .foregroundColor(.secondary)
-                    }
+                    Text(recipe.difficulty.description)
+                        .foregroundColor(recipe.difficulty.color)
                 }
                 .font(.subheadline)
             }
@@ -64,53 +59,53 @@ struct RecipeCard: View {
 
 
 #Preview {
-    RecipeCard(recipe: Recipe(
-        // Assuming you have Step, Cost, and Difficulty defined elsewhere
-        
-        name: "Spicy Coconut Curry with many ingredients!",
-        description: "A quick, vibrant, and creamy vegan curry with a kick.",
-        cost: .cheap,
-        time: 35,
-        difficulty: .easy,
-        numPeople: 4,
-        steps: [
-            Step(
-                title: "Prep",
-                instruction: "Finely chop the garlic and gather all measured ingredients."
-            ),
-            Step(
-                title: "Sauté",
-                instruction: "Heat a large pot over medium heat, add the chopped garlic and red curry paste, and sauté for 2 minutes until fragrant."
-            ),
-            Step(
-                title: "Simmer",
-                instruction: "Pour in the coconut milk and vegetable broth. Bring the mixture to a gentle simmer for 15 minutes."
-            ),
-            Step(
-                title: "Serve",
-                instruction: "Serve immediately over cooked Basmati rice and squeeze fresh lime juice on top."
-            ),
-        ],
-        ingredients: [
-            // Example 1: Mass/Weight (grams)
-            Ingredient(name: "Basmati Rice", quantity: 250, unit: .grams),
-            
-            // Example 2: Volume (milliliters)
-            Ingredient(name: "Coconut Milk", quantity: 400, unit: .milliliters),
-            
-            // Example 3: Count (units)
-            Ingredient(name: "Garlic Cloves", quantity: 3, unit: .units),
-            
-            // Example 4: Cooking Measure (tablespoon)
-            Ingredient(name: "Red Curry Paste", quantity: 2, unit: .tablespoon),
-            
-            // Example 5: Volume (cups)
-            Ingredient(name: "Vegetable Broth", quantity: 1.5, unit: .cups),
-            
-            // Example 6: Count (pieces/slices)
-            Ingredient(name: "Lime", quantity: 4, unit: .slice)
-        ],
-        
-        imageId: "https://example.com/images/coconut_curry.jpg"
-    ))
+//    RecipeCard(recipe: Recipe(
+//        // Assuming you have Step, Cost, and Difficulty defined elsewhere
+//        
+//        name: "Spicy Coconut Curry with many ingredients!",
+//        description: "A quick, vibrant, and creamy vegan curry with a kick.",
+//        cost: .cheap,
+//        time: "35",
+//        difficulty: .easy,
+//        numPeople: 4,
+//        steps: [
+//            Step(
+//                title: "Prep",
+//                instruction: "Finely chop the garlic and gather all measured ingredients."
+//            ),
+//            Step(
+//                title: "Sauté",
+//                instruction: "Heat a large pot over medium heat, add the chopped garlic and red curry paste, and sauté for 2 minutes until fragrant."
+//            ),
+//            Step(
+//                title: "Simmer",
+//                instruction: "Pour in the coconut milk and vegetable broth. Bring the mixture to a gentle simmer for 15 minutes."
+//            ),
+//            Step(
+//                title: "Serve",
+//                instruction: "Serve immediately over cooked Basmati rice and squeeze fresh lime juice on top."
+//            ),
+//        ],
+//        ingredients: [
+//            // Example 1: Mass/Weight (grams)
+//            Ingredient(name: "Basmati Rice", quantity: 250, unit: .grams),
+//            
+//            // Example 2: Volume (milliliters)
+//            Ingredient(name: "Coconut Milk", quantity: 400, unit: .milliliters),
+//            
+//            // Example 3: Count (units)
+//            Ingredient(name: "Garlic Cloves", quantity: 3, unit: .units),
+//            
+//            // Example 4: Cooking Measure (tablespoon)
+//            Ingredient(name: "Red Curry Paste", quantity: 2, unit: .tablespoon),
+//            
+//            // Example 5: Volume (cups)
+//            Ingredient(name: "Vegetable Broth", quantity: 1.5, unit: .cups),
+//            
+//            // Example 6: Count (pieces/slices)
+//            Ingredient(name: "Lime", quantity: 4, unit: .slice)
+//        ],
+//        
+//        imageId: "https://example.com/images/coconut_curry.jpg"
+//    ))
 }
