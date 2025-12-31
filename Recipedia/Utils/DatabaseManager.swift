@@ -8,7 +8,7 @@
 import FirebaseAuth
 import FirebaseFirestore
 
-struct Database {
+struct DatabaseManager {
     
     static let db = Firestore.firestore()
     
