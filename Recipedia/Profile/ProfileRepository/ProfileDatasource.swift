@@ -6,54 +6,24 @@
 //
 
 import SwiftUI
-import FirebaseStorage
-import FirebaseFirestore
 
 final class ProfileDatasource {
     
-    let storageRef = Storage.storage().reference()
-    let db = Firestore.firestore()
-    
-//    func fetchProfilePicture(for user: User, completion: @escaping (UIImage) -> Void) {
-//        guard !user.pictureURL.isEmpty else {
-//            completion(UIImage(resource: .defaultProfilePicture))
-//            return
-//        }
-//        
-//        let path = "images/profilePictures/\(user.pictureURL)"
-//        
-//        getData(path: path) { result in
-//            switch result {
-//            case .success(let data):
-//                if let data = data, let uiImage = UIImage(data: data) {
-//                    completion(uiImage)
-//                } else {
-//                    completion(UIImage(resource: .defaultProfilePicture))
-//                }
-//            case .failure(_):
-//                completion(UIImage(resource: .defaultProfilePicture))
-//            }
-//        }
-//    }
-
-    
-    func updateProfilePicture(image: UIImage, imageID: String, completion: @escaping (Result<String, Error>) -> Void) -> String {
+    func updateProfilePicture(image: UIImage, imageID: String, completion: @escaping (Result<String, Error>) -> Void) {
         // Upload image to database
         if let data = image.jpegData(compressionQuality: 0.8) {
-            let metadata = StorageMetadata()
-            metadata.contentType = "image/jpg"
-            _ = uploadData(data, to: "images/profilePictures/\(imageID)", metadata: metadata, completion: completion)
-        }
-        
-        return imageID
+            _ = StorageManager.uploadData(data,
+                                          to: "\(PROFILE_PICTURES_PATH)/\(imageID).\(IMAGE_FORMAT)",
+                                          contentType: "image/jpg",
+                                          completion: completion)
+        }        
     }
     
     func deleteProfilePicture(path: String, completion: @escaping (Error?) -> Void) {
-        deleteData(path: path, completion: completion)
+        StorageManager.deleteData(path: path, completion: completion)
     }
     
-    // TODO: delegate to new Database file
     func updateUser(user: User, completion: @escaping (Result<String, Error>) -> Void) {
-        Database.updateUser(user: user, completion: completion)
+        DatabaseManager.updateUser(user: user, completion: completion)
     }
 }

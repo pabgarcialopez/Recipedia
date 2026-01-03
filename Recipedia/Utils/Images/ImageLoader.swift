@@ -12,32 +12,44 @@ import SwiftUI
 typealias ImageCache = NSCache<NSString, UIImage>
 
 class ImageLoader: ObservableObject {
-    @Published var image: UIImage = UIImage(resource: .defaultPicturePlaceholder)
 
-    private static var cache = NSCache<NSString, UIImage>()
-    
+    @Published var image: UIImage = UIImage(resource: .defaultPicturePlaceholder)
+    @Published var isLoading: Bool = false
+
+    private static let cache = NSCache<NSString, UIImage>()
+
     func loadImage(from path: String) {
-        // Check cache first
-        if let cachedImage = ImageLoader.cache.object(forKey: path as NSString) {
-            self.image = cachedImage
-            print("Image loaded from cache for: \(path)")
+        
+        print("Getting picture from \(path)")
+
+        // Cache hit -> no loading state
+        if let cachedImage = Self.cache.object(forKey: path as NSString) {
+            image = cachedImage
+            isLoading = false
+            print("Getting chached picture")
             return
         }
 
-        getData(path: path) { result in
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
+        isLoading = true
+
+        StorageManager.getData(path: path) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
                 
+                self.isLoading = false
+
                 switch result {
                 case .success(let data):
-                    if let data = data, let uiImage = UIImage(data: data) {
-                        ImageLoader.cache.setObject(uiImage, forKey: path as NSString)
+                    if let uiImage = UIImage(data: data) {
+                        Self.cache.setObject(uiImage, forKey: path as NSString)
                         self.image = uiImage
-                        print("Image downloaded and cached for: \(path)")
+                        print("Successfully retrieved image")
+                    } else {
+                        self.image = UIImage(resource: .defaultPicturePlaceholder)
                     }
-                case .failure(let error):
+
+                case .failure:
                     self.image = UIImage(resource: .defaultPicturePlaceholder)
-                    print("Failed to load image for \(path): \(error). Using default image placeholder.")
                 }
             }
         }

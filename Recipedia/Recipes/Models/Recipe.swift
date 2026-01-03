@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import FirebaseAuth
 
 enum Cost: String, Codable, CaseIterable, Hashable {
     case cheap = "Cheap", medium = "Medium", pricy = "Pricy"
@@ -41,7 +42,7 @@ enum Difficulty: String, Codable, CaseIterable, Hashable {
 }
 
 struct Recipe: Codable {
-    private(set) var recipeId: UUID
+    private(set) var id: UUID
     var name: String
     var description: String
     var cost: Cost
@@ -50,10 +51,12 @@ struct Recipe: Codable {
     var numPeople: Int
     var ingredients: [Ingredient]
     var steps: [Step]
-    var imageId: String?
+    
+    var ownerId: String?
+    var imageId: String
     
     init(
-        recipeId: UUID = UUID(),
+        id: UUID = UUID(),
         name: String = "",
         description: String = "",
         cost: Cost = .cheap,
@@ -62,9 +65,9 @@ struct Recipe: Codable {
         numPeople: Int = 4,
         steps: [Step] = [],
         ingredients: [Ingredient] = [],
-        imageId: String? = nil
+        imageId: String = ""
     ) {
-        self.recipeId = recipeId
+        self.id = id
         self.name = name
         self.description = description
         self.time = time
@@ -74,8 +77,10 @@ struct Recipe: Codable {
         self.steps = steps
         self.ingredients = ingredients
         
-        // ImageId is by default the image from the recipe
-        if imageId == nil { self.imageId = "\(self.recipeId)" }
-        else { self.imageId = imageId }
+        // OwnerId can be nil!
+        self.ownerId = Auth.auth().currentUser?.uid
+        
+        // ImageId is by default the recipe's id
+        self.imageId = imageId == "" ? "\(self.id)" : imageId
     }
 }

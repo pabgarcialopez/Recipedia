@@ -13,6 +13,7 @@ struct ProfileEditView: View {
     @Environment(\.dismiss) var dismiss
     @ObservedObject var profileViewModel: ProfileViewModel
     
+    // Helper
     private var user: User { profileViewModel.user }
     
     // Store the original user to know whether there were any changes
@@ -99,7 +100,7 @@ struct ProfileEditView: View {
                 Button("Save", action: updateUser)
                     .disabled(!userInfoHasChanges)
             }
-        }
+        } // TODO: make these .onChange better like in RecipeEditView.
         .onChange(of: profileViewModel.errorMessage) { _, newValue in
             if let message = newValue { showAlert(title: "Error", message: message) }
         }
@@ -111,7 +112,7 @@ struct ProfileEditView: View {
         }, message: { Text(alertMessage) })
     }
     
-    func showAlert(title: String, message: String) {
+    private func showAlert(title: String, message: String) {
         alertTitle = title
         alertMessage = message
         isShowingAlert = true

@@ -10,7 +10,10 @@ import PhotosUI
 
 struct RecipeEditView: View {
     
+    @EnvironmentObject var router: AppRouter
+    
     private let isNew: Bool
+    @State private var isAlertShowing: Bool = false
     
     // This is a draft recipe that can host a new and an already existing recipe.
     @State private var recipe: Recipe
@@ -36,128 +39,147 @@ struct RecipeEditView: View {
     
     var body: some View {
         ScrollView {
-            Group {
-                VStack(alignment: .leading, spacing: 20) {
-                    Text(self.isNew ? "New recipe" : "Edit recipe")
-                        .font(.system(size: 28))
-                        .bold()
-                    
-                    photosPicker
-                    
-                    // Basic info
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Basic info")
-                            .font(.system(size: 18))
-                            .bold()
-                        LabeledTextField(label: "Title", prompt: "Recipe's name", text: $recipe.name)
-                        LabeledTextField(label: "Description", prompt: "Brief recipe description", text: $recipe.description, axis: .vertical)
-                        LabeledTextField(label: "Time (mins)", prompt: "Time", text: $recipe.time)
-                        
-                        HStack {
-                            LabeledStepper(label: "# of people", value: $recipe.numPeople, range: 1...16)
-                            Spacer()
-                            LabeledPicker(label: "Difficulty", selection: $recipe.difficulty, content: {
-                                ForEach(Difficulty.allCases, id: \.self) { difficulty in Text(difficulty.description)}
-                            })
-                            Spacer()
-                            LabeledPicker(label: "Cost", selection: $recipe.cost, content: {
-                                ForEach(Cost.allCases, id: \.self) { cost in Text(cost.description)}
-                            })
-                        }
-                    }
-                    
-                    // Ingredients
-                    VStack(alignment: .leading) {
-                        Text("Ingredients")
-                            .font(.system(size: 18))
-                            .bold()
-                        
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach($recipe.ingredients) { $ingredient in
-                                IngredientEditCard(ingredient: $ingredient)
-                                    .contextMenu {
-                                        Button(role: .destructive) { deleteIngredient(ingredient)
-                                        } label: { Label("Delete ingredient", systemImage: "trash") }
-                                    }
-                                Divider()
-                            }
-                            
-                            Button(action: addIngredient) {
-                                HStack(spacing: 13) {
-                                    Image(systemName: "plus")
-                                        .clipShape(Circle())
-                                    Text("Add ingredient")
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
-                            
-                            
-                        }
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemGray6))
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(.separator))
-                        )
-                    }
-                    
-                    // Steps
-                    VStack(alignment: .leading) {
-                        Text("Steps")
-                            .font(.system(size: 18))
-                            .bold()
-                        
-                        VStack(alignment: .leading, spacing: 0) {
-                            ForEach(recipe.steps.indices, id: \.self) { idx in
-                                StepEditCard(order: idx + 1, step: $recipe.steps[idx])
-                                    .contextMenu {
-                                        Button(role: .destructive) { deleteStep(recipe.steps[idx])
-                                        } label: { Label("Delete step", systemImage: "trash") }
-                                    }
-                                Divider()
-                            }
-                            
-                            Button(action: addStep) {
-                                HStack(spacing: 13) {
-                                    Image(systemName: "plus")
-                                        .clipShape(Circle())
-                                    Text("Add step")
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
-                            
-                            
-                        }
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.systemGray6))
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(.separator))
-                        )
-                    }
-                    
-                    
-                    
-                    // Save button
+            
+            VStack(alignment: .leading, spacing: 20) {
+                Text(self.isNew ? "New recipe" : "Edit recipe")
+                    .font(.system(size: 28))
+                    .bold()
+                
+                photosPicker
+                
+                basicInfoSection
+                
+                ingredientsSection
+                
+                stepsSection
+                
+                if recipeViewModel.isUploadingImage {
+                    uploadProgressBar
                 }
+                
+                saveButton
             }
             .padding(28)
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Done") {
-                        hideKeyboard()
-                    }
+        }
+        .navigationBarBackButtonHidden(recipeViewModel.isLoading || recipeViewModel.isUploadingImage)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { hideKeyboard() }
+            }
+        }
+        .onChange(of: recipeViewModel.alertTitle) { _, newValue in
+            if newValue != nil { showAlert() }
+        }
+        .alert(recipeViewModel.alertTitle ?? "", isPresented: $isAlertShowing, actions: {
+            Button("OK", role: .cancel) {
+                recipeViewModel.alertTitle = nil
+                recipeViewModel.alertMessage = nil
+                recipeViewModel.alertStatus = nil
+                // Go back to Home tab
+                router.selectedTab = 0
+            }
+        }, message: { Text(recipeViewModel.alertMessage ?? "") })
+        .onDisappear {
+            if isNew {
+                self.recipe = Recipe()
+                self.recipeImageData = nil
+                self.selectedPicture = nil
+            }
+        }
+    }
+
+    // MARK: - Sub-views
+
+    private var basicInfoSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Basic info").font(.system(size: 18)).bold()
+            LabeledTextField(label: "Title", prompt: "Recipe's name", text: $recipe.name)
+            LabeledTextField(label: "Description", prompt: "Brief description", text: $recipe.description, axis: .vertical)
+            LabeledTextField(label: "Time (mins)", prompt: "Time", text: $recipe.time)
+                .keyboardType(.decimalPad)
+            
+            HStack {
+                LabeledStepper(label: "# of people", value: $recipe.numPeople, range: 1...16)
+                Spacer()
+                LabeledPicker(label: "Difficulty", selection: $recipe.difficulty) {
+                    ForEach(Difficulty.allCases, id: \.self) { Text($0.description) }
+                }
+                Spacer()
+                LabeledPicker(label: "Cost", selection: $recipe.cost) {
+                    ForEach(Cost.allCases, id: \.self) { Text($0.description) }
                 }
             }
         }
     }
+
+    private var ingredientsSection: some View {
+        VStack(alignment: .leading) {
+            Text("Ingredients").font(.system(size: 18)).bold()
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach($recipe.ingredients) { $ingredient in
+                    IngredientEditCard(ingredient: $ingredient)
+                        .contextMenu {
+                            Button(role: .destructive) { deleteIngredient(ingredient) } label: {
+                                Label("Delete ingredient", systemImage: "trash")
+                            }
+                        }
+                    Divider()
+                }
+                
+                Button(action: addIngredient) {
+                    Label("Add ingredient", systemImage: "plus")
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(.separator)))
+        }
+    }
+
+    private var stepsSection: some View {
+        VStack(alignment: .leading) {
+            Text("Steps").font(.system(size: 18)).bold()
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(recipe.steps.indices, id: \.self) { idx in
+                    StepEditCard(order: idx + 1, step: $recipe.steps[idx])
+                        .contextMenu {
+                            Button(role: .destructive) { deleteStep(recipe.steps[idx]) } label: {
+                                Label("Delete step", systemImage: "trash")
+                            }
+                        }
+                    Divider()
+                }
+                
+                Button(action: addStep) {
+                    Label("Add step", systemImage: "plus")
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(.separator)))
+        }
+    }
+
+    private var saveButton: some View {
+        Button(action: saveRecipe) {
+            HStack(spacing: 8) {
+                Text("Save")
+                if recipeViewModel.isLoading {
+                    ProgressView()
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(recipeViewModel.isLoading ? Color.gray : Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+        }
+        .disabled(recipeViewModel.isLoading)
+    }
+
     
     private var photosPicker: some View {
         PhotosPicker(selection: $selectedPicture, matching: .images) {
@@ -236,6 +258,28 @@ struct RecipeEditView: View {
         if let index = recipe.steps.firstIndex(where: {$0.id == step.id} ) {
             recipe.steps.remove(at: index)
         }
+    }
+    
+    private func saveRecipe() {
+        recipeViewModel.saveRecipe(recipe: recipe, recipeImageData: recipeImageData)
+        
+    }
+    
+    private func showAlert() {
+        isAlertShowing = true
+    }
+    
+    private var uploadProgressBar: some View {
+        VStack(spacing: 8) {
+            ProgressView(value: recipeViewModel.uploadProgress, total: 1.0)
+                .progressViewStyle(.linear)
+                .tint(.blue)
+            
+            Text("Uploading image: \(Int(recipeViewModel.uploadProgress * 100))%")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical)
     }
     
 }

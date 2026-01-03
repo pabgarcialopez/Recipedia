@@ -5,6 +5,8 @@
 //  Created by Pablo García López on 6/12/25.
 //
 
+import Foundation
+
 final class RecipeRepository {
     
     private let recipeDatasource: RecipeDatasource
@@ -17,16 +19,16 @@ final class RecipeRepository {
         recipeDatasource.fetchRecipes(completion: completion)
     }
     
-    func createRecipe(recipe: Recipe) {
-        recipeDatasource.createRecipe(recipe: recipe)
+    func updateRecipe(recipe: Recipe, completion: @escaping (Result<String, any Error>) -> Void) {
+        recipeDatasource.updateRecipe(recipe: recipe, completion: completion)
     }
     
-    func updateRecipe(recipe: Recipe) {
-        recipeDatasource.updateRecipe(recipe: recipe)
+    func deleteRecipe(recipe: Recipe, completion: @escaping (Result<String, any Error>) -> Void) {
+        recipeDatasource.deleteRecipe(recipe: recipe, completion: completion)
     }
     
-    func deleteRecipe(recipe: Recipe) {
-        recipeDatasource.deleteRecipe(recipe: recipe)
+    func saveRecipeImage(from data: Data?, imageId: String, progress: @escaping (Double) -> Void, completion: @escaping (Result<Void, Error>) -> Void) {
+        recipeDatasource.saveRecipeImage(from: data, imageId: imageId, progress: progress, completion: completion)
     }
 
 }

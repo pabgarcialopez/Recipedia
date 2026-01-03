@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct RecipeCard: View {
+    
+    @StateObject private var imageLoader = ImageLoader()
+    
     private let recipe: Recipe
     
     init(recipe: Recipe) {
@@ -18,10 +22,20 @@ struct RecipeCard: View {
         HStack(alignment: .top, spacing: 10) {
             
             // Picture
-//            RemoteImageView(path: String)
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.gray.opacity(0.3)) // Placeholder background
-                .frame(width: 130, height: 100)
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.gray.opacity(0.3))
+
+                if imageLoader.isLoading {
+                    ProgressView()
+                } else {
+                    Image(uiImage: imageLoader.image)
+                        .resizable()
+                        .scaledToFill()
+                }
+            }
+            .frame(width: 130, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             
             VStack(alignment: .leading, spacing: 6) {
                 Text(recipe.name)
@@ -54,6 +68,10 @@ struct RecipeCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 15))
         .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 2)
         .padding(.horizontal) // To separate card from screen edges
+        .onAppear {
+            imageLoader.loadImage(from: "\(RECIPES_PICTURES_PATH)/\(recipe.imageId).\(IMAGE_FORMAT)")
+        }
+
     }
 }
 

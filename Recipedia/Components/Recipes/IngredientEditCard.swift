@@ -22,8 +22,8 @@ struct IngredientEditCard: View {
             .fixedSize()
             
             HStack(spacing: 0) {
-                TextField("", value: $ingredient.quantity, format: .number)
-                    .keyboardType(.numberPad)
+                TextField("", value: $ingredient.quantity, format: .number, prompt: Text("Quantity"))
+                    .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
 
                 Picker("", selection: $ingredient.unit) {

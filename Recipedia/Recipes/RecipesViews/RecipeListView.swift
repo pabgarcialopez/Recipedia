@@ -17,10 +17,10 @@ struct RecipeListView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
+            VStack {
                 if recipeViewModel.isLoading {
                     ProgressView()
-                } else if recipeViewModel.errorMessage != nil {
+                } else if recipeViewModel.alertStatus == .failure {
                     ContentUnavailableView("Your recipes could not be loaded", systemImage: "exclamationmark.triangle", description: Text("Please, try again later or contact support."))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -30,7 +30,7 @@ struct RecipeListView: View {
                 } else {
                     ScrollView {
                         VStack(alignment: .center, spacing: 15) { // Needed since ScrollView only provides the scrollable area, not the children arrangement.
-                            ForEach(recipeViewModel.recipes, id: \.recipeId) { recipe in
+                            ForEach(recipeViewModel.recipes, id: \.id) { recipe in
                                 NavigationLink {
                                     RecipeDetailView(recipe: recipe)
                                 } label: {

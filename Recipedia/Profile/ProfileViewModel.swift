@@ -65,20 +65,20 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func fetchProfilePicture() {
-        self.imageLoader.loadImage(from: "\(PROFILE_PICTURES_PATH)/\(user.pictureURL)")
+        self.imageLoader.loadImage(from: "\(PROFILE_PICTURES_PATH)/\(user.profilePictureId).\(IMAGE_FORMAT)")
         self.profilePicture = imageLoader.image
     }
     
     func deleteProfilePicture() {
-        profilePicture = UIImage(resource: .defaultProfilePicture)
-        let path = "images/profilePictures/\(user.id).jpg"
+        let path = "\(PROFILE_PICTURES_PATH)/\(user.id).\(IMAGE_FORMAT)"
         profileRepository.deleteProfilePicture(path: path) { error in
             if let error = error {
                 self.errorMessage = error.localizedDescription
             }
         }
         
-        user.pictureURL = ""
+        profilePicture = UIImage(resource: .defaultProfilePicture)
+        user.profilePictureId = ""
         updateUser(user: user)
     }
     
@@ -94,18 +94,15 @@ final class ProfileViewModel: ObservableObject {
             }
             
             // Update in database
-            let imageID = "\(user.id).jpg"
-            let newURL = profileRepository.updateProfilePicture(image: profilePicture, imageID: imageID) { result in
+            let imageID = user.id
+            profileRepository.updateProfilePicture(image: profilePicture, imageID: imageID) { result in
                 switch result {
-                    // TODO: don't mix these messages with the updateUser messages.
                     case .success(_): ()
-//                        self.profileMessage = "New profile picture has been set"
                     case .failure(_): ()
-//                        self.errorMessage = error.localizedDescription
                 }
             }
             
-            user.pictureURL = newURL
+            user.profilePictureId = imageID
             updateUser(user: user)
         }
     }
@@ -153,7 +150,7 @@ extension ProfileViewModel {
             firstName: "Pablo",
             lastName: "García",
             bio: "SwiftUI enjoyer",
-            pictureURL: ""
+            profilePictureId: ""
         )
         vm.profilePicture = UIImage(resource: .defaultProfilePicture)
         return vm

@@ -10,74 +10,75 @@ import FirebaseStorage
 
 struct StorageManager {
     
-    let storageRef = Storage.storage().reference()
+    static let storageRef = Storage.storage().reference()
     
-    func getData(path: String, completion: @escaping (Result<Data?, any Error>) -> Void) {
-        let getterRef = storageRef.child(path)
-        
-        getterRef.getData(maxSize: MAX_SIZE) { data, error in
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                completion(.success(data))
-            }
-        }
-    }
-    
-    func uploadData(
+    // MARK: - Upload data
+    /// Uploads data to a given path and returns the download URL.
+    static func uploadData(
         _ data: Data,
         to path: String,
-        metadata: StorageMetadata? = nil,
-        completion: @escaping (Result<String, any Error>) -> Void
+        contentType: String? = nil,
+        completion: ((Result<String, Error>) -> Void)? = nil
     ) -> StorageUploadTask {
         
-        let dataRef = storageRef.child(path)
+        let ref = storageRef.child(path)
         
-        // Upload task is returned so the caller can observe progress or cancel if needed
-        let uploadTask = dataRef.putData(data, metadata: metadata) { metadata, error in
-            
+        let metadata = StorageMetadata()
+        if contentType != nil {
+            metadata.contentType = contentType
+        }
+        
+        let uploadTask = ref.putData(data, metadata: metadata) { _, error in
             if let error = error {
-                completion(.failure(error))
+                completion?(.failure(error))
                 return
             }
             
-            // Retrieve the download URL once upload completes successfully
-            dataRef.downloadURL { url, urlError in
-                
+            ref.downloadURL { url, urlError in
                 if let urlError = urlError {
-                    completion(.failure(urlError))
-                    return
-                }
-                
-                guard let url = url else {
+                    completion?(.failure(urlError))
+                } else if let url = url {
+                    completion?(.success(url.absoluteString))
+                } else {
                     let unexpectedError = NSError(
-                        domain: "UploadData",
+                        domain: "StorageManager",
                         code: -1,
                         userInfo: [NSLocalizedDescriptionKey: "URL is nil after successful upload."]
                     )
-                    completion(.failure(unexpectedError))
-                    return
+                    completion?(.failure(unexpectedError))
                 }
-                
-                // Return the actual download URL string
-                completion(.success(url.absoluteString))
             }
         }
         
         return uploadTask
     }
+
     
-    
-    
-    func deleteData(path: String, completion: @escaping ((any Error)?) -> Void) {
-        let deletionRef = storageRef.child(path)
-        Task { @MainActor in // To make deletion in main thread. Necessary.
-            do {
-                try await deletionRef.delete()
-                completion(nil)
-            } catch {
-                completion(error)
+    // MARK: - Download data
+    static func getData(path: String,
+                        maxSize: Int64 = MAX_SIZE,
+                        completion: @escaping (Result<Data, Error>) -> Void) {
+        let ref = storageRef.child(path)
+        ref.getData(maxSize: maxSize) { data, error in
+            if let error = error { completion(.failure(error)) }
+            else if let data = data { completion(.success(data)) }
+            else {
+                let unexpectedError = NSError(
+                    domain: "StorageManager",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "No data returned from Storage."]
+                )
+                completion(.failure(unexpectedError))
             }
+        }
+    }
+    
+    // MARK: - Delete data
+    static func deleteData(path: String, completion: @escaping (Error?) -> Void) {
+        let ref = storageRef.child(path)
+        Task { @MainActor in
+            do { try await ref.delete(); completion(nil) }
+            catch { completion(error) }
         }
     }
 }

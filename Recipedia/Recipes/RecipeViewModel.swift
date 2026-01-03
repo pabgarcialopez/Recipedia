@@ -13,8 +13,13 @@ final class RecipeViewModel: ObservableObject {
     private let recipeRepository: RecipeRepository
     
     @Published var recipes: [Recipe]
-    @Published var errorMessage: String? = nil
     @Published var isLoading: Bool = false
+    @Published var alertTitle: String? = nil
+    @Published var alertMessage: String? = nil
+    @Published var alertStatus: CompletionStatus? = nil
+    
+    @Published var uploadProgress: Double = 0.0
+    @Published var isUploadingImage: Bool = false
     
     init(recipeRepository: RecipeRepository = RecipeRepository()) {
         self.recipeRepository = recipeRepository
@@ -27,29 +32,74 @@ final class RecipeViewModel: ObservableObject {
         self.isLoading = true
         recipeRepository.fetchRecipes { result in
             switch result {
-            case .success(let recipes):
-                print("I got here and recipes are \(recipes)")
-                self.recipes = recipes
-            case .failure(let error):
-                self.errorMessage = error.localizedDescription
-            }
+                case .success(let recipes):
+                    self.recipes = recipes
+                    self.alertStatus = .success
+                case .failure(let error):
+                print("Error when loading the recipes: \(error.localizedDescription)")
+                    self.alertTitle = "Error"
+                    self.alertMessage = error.localizedDescription
+                    self.alertStatus = .failure
+                }
             self.isLoading = false
         }
     }
     
-    func createRecipe(recipe: Recipe) {
-        self.recipeRepository.createRecipe(recipe: recipe)
-    }
-    
+    // Creates and updates a recipe
     func updateRecipe(recipe: Recipe) {
-        self.recipeRepository.updateRecipe(recipe: recipe)
+        self.isLoading = true
+        self.recipeRepository.updateRecipe(recipe: recipe) { result in
+            self.isLoading = false
+            switch result {
+                case .success(_):
+                    self.recipes.append(recipe) // To update Home View.
+                    self.alertTitle = "Success"
+                    self.alertMessage = "Your recipe has been saved!"
+                    self.alertStatus = .success
+                case .failure(let error):
+                    self.alertTitle = "Error"
+                    self.alertMessage = error.localizedDescription
+                    self.alertStatus = .failure
+            }
+        }
     }
     
     func deleteRecipe(recipe: Recipe) {
-        self.recipeRepository.deleteRecipe(recipe: recipe)
+        self.isLoading = true
+        self.recipeRepository.deleteRecipe(recipe: recipe) { result in
+            self.isLoading = false
+            switch result {
+                case .success(_):
+                    self.alertTitle = "Success"
+                    self.alertMessage = "Your recipe has been deleted!"
+                    self.alertStatus = .success
+                case .failure(let error):
+                    self.alertTitle = "Error"
+                    self.alertMessage = error.localizedDescription
+                    self.alertStatus = .failure
+            }
+        }
     }
     
-    func setRecipeImageData(from data: Data) {
-
+    func saveRecipe(recipe: Recipe, recipeImageData: Data?) {
+        self.isLoading = true
+        
+        // 1. If there's an image, upload it first and track progress
+        if let data = recipeImageData {
+            self.isUploadingImage = true
+            self.uploadProgress = 0.0
+            
+            recipeRepository.saveRecipeImage(from: data, imageId: recipe.imageId) { progress in
+                // Update progress bar UI
+                self.uploadProgress = progress
+            } completion: { result in
+                self.isUploadingImage = false
+                // 2. Once image is done, save the recipe metadata
+                self.updateRecipe(recipe: recipe)
+            }
+        } else {
+            // No image? Just save the metadata
+            self.updateRecipe(recipe: recipe)
+        }
     }
 }

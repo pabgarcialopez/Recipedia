@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+final class AppRouter: ObservableObject {
+    @Published var selectedTab: Int = 0
+}
+
+
 struct RootView: View {
         
     @StateObject var profileViewModel: ProfileViewModel
@@ -14,7 +19,7 @@ struct RootView: View {
     @StateObject private var globalImageLoader: ImageLoader
     @ObservedObject var authenticationViewModel: AuthenticationViewModel
     
-    @State private var selectedTab = 0
+    @StateObject private var router = AppRouter()
     
     init(authenticationViewModel: AuthenticationViewModel) {
         self.authenticationViewModel = authenticationViewModel
@@ -27,7 +32,7 @@ struct RootView: View {
     
     var body: some View {
                 
-        TabView(selection: $selectedTab) {
+        TabView(selection: $router.selectedTab) {
             RecipeListView(recipeViewModel: recipeViewModel)
                 .tabItem { Label("Home", systemImage: "house") }
                 .tag(0)
@@ -41,6 +46,7 @@ struct RootView: View {
                 .tabItem { Label("Profile", systemImage: "person.crop.circle") }
                 .tag(2)
         }
+        .environmentObject(router)
         .environment(\.imageLoader, globalImageLoader)
         
     }

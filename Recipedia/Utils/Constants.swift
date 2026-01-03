@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseAuth
 
 // MARK: - App meta data
 let APP_NAME = "Recipedia"
@@ -34,8 +35,7 @@ let USERS_COLLECTION = "users"
 let RECIPES_COLLECTION = "recipes"
 
 // MARK: - Firestore Storage paths
-let PROFILE_PICTURES_PATH = "images/profilePictures"
+let PROFILE_PICTURES_PATH = "images/profiles"
+let RECIPES_PICTURES_PATH = "images/recipes"
 
-
-
-
+let IMAGE_FORMAT = "jpg"

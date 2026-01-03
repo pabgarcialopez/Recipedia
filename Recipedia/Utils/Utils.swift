@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import UIKit
+import FirebaseAuth
 
 // --------- Allow general use of the authentication functions ------
 
@@ -65,3 +66,9 @@ extension View {
         modifier(Stroked(color: color, lineWidth: lineWidth, cornerRadius: cornerRadius))
     }
 }
+
+// --------- Status enum for success or failure in completions -----------------------------------------
+enum CompletionStatus {
+    case success, failure
+}
+

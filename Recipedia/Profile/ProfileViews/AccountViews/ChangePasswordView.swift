@@ -86,7 +86,7 @@ struct ChangePasswordView: View {
         return someFieldIsEmpty || !newPasswordMatches
     }
     
-    func showAlert(title: String, message: String = "") {
+    private func showAlert(title: String, message: String = "") {
         alertShowing = true
         alertTitle = title
         alertMessage = message
